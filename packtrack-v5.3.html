@@ -1,0 +1,2404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Packtrack – Narayandas Sweets & Bites</title>
+  <script type="importmap">{"imports":{"react":"https://esm.sh/react@18","react-dom/client":"https://esm.sh/react-dom@18/client","https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js":"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js","https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js":"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"}}</script>
+</head>
+<body style="margin:0;padding:0;">
+<div id="root"></div>
+<script type="module">
+import{createElement as h,useState,useEffect,useRef}from"react";
+import{createRoot}from"react-dom/client";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import{getFirestore,collection,doc,setDoc,getDoc,getDocs,deleteDoc,onSnapshot,addDoc,serverTimestamp,query,orderBy}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const FB={apiKey:"AIzaSyDYgl_MQLXNkxbAM5BMhbZk574gc1GXYhs",authDomain:"packtrack-godown-sheet.firebaseapp.com",projectId:"packtrack-godown-sheet",storageBucket:"packtrack-godown-sheet.firebasestorage.app",messagingSenderId:"553292249232",appId:"1:553292249232:web:2f6f3c4ec1a010248fc015"};
+const db=getFirestore(initializeApp(FB));
+
+const EMOJIS=["🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🏗️","🏘️","🏚️","🏛️","🏟️","⛪","🕌","🛕","🕍","📦","🔑","💼","🎯","🌿","🔥","⭐","🍬","🧁","🍯","🫙","🎨","💎","🌟","🏆","🚀","🌊","☀️","🌙","🍀","🎪","🛒","🧺","🎭",
+"🅰️","🅱️","🅲","🅳","🅴","🅵","🅶","🅷","🅸","🅹","🅺","🅻","🅼","🅽","🅾️","🅿️","🆀","🆁","🆂","🆃","🆄","🆅","🆆","🆇","🆈","🆉",
+"Ⓐ","Ⓑ","Ⓒ","Ⓓ","Ⓔ","Ⓕ","Ⓖ","Ⓗ","Ⓘ","Ⓙ","Ⓚ","Ⓛ","Ⓜ","Ⓝ","Ⓞ","Ⓟ","Ⓠ","Ⓡ","Ⓢ","Ⓣ","Ⓤ","Ⓥ","Ⓦ","Ⓧ","Ⓨ","Ⓩ"];
+const COLORS=["#16a34a","#1565c0","#6a1b9a","#c62828","#e65100","#0277bd","#2e7d32","#4527a0","#ad1457","#00695c","#f57f17","#4e342e"];
+
+// ── SEED DATA ──
+const SEED=[
+  {id:"jb_godown",name:"Judge Bazar Godown",shortName:"JB Godown",type:"godown",color:"#16a34a",emoji:"🏭",destinations:["JB Outlet","KC DEY Outlet"],itemOrder:null,orderLocked:false,
+   items:[
+    {id:"jbg1",name:"1800 ml Sealing Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:0,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"jbg2",name:"110 mm Wooden Spoon",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:25,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbg3",name:"150 ml White Paper Cup",baseUnit:"pkt",outputUnit:"pcs",conversion:45,baseBal:7,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbg4",name:"150 ml Ripple Cup",baseUnit:"pkt",outputUnit:"pcs",conversion:25,baseBal:13,minStock:5,costPerUnit:3,costUnit:"output"},
+    {id:"jbg5",name:"150 ml Ripple Cup Lid",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:8,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbg6",name:"160 mm Wooden Spoon",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:26,minStock:5,costPerUnit:58,costUnit:"base"},
+    {id:"jbg7",name:"2 pc Thonga",baseUnit:"kg",outputUnit:"pcs",conversion:333,baseBal:11.296,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"jbg8",name:"200 ml Glass Bottle",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:5,costPerUnit:10,costUnit:"base"},
+    {id:"jbg9",name:"200 ml Lid - Glass Bottle",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:5,costPerUnit:3,costUnit:"base"},
+    {id:"jbg10",name:"250 gms Paper Box",baseUnit:"kgs",outputUnit:"pcs",conversion:64,baseBal:86.166,minStock:5,costPerUnit:3.5,costUnit:"output"},
+    {id:"jbg11",name:"3 CP Combo Tray",baseUnit:"pkt",outputUnit:"pcs",conversion:25,baseBal:17,minStock:5,costPerUnit:15,costUnit:"output"},
+    {id:"jbg12",name:"4 pc Thonga",baseUnit:"kg",outputUnit:"pcs",conversion:250,baseBal:16.178,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"jbg13",name:"500 ml Zume Round Bowl",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:4,minStock:3,costPerUnit:9,costUnit:"output"},
+    {id:"jbg14",name:"7\" Sunmica Plate",baseUnit:"pkt",outputUnit:"pcs",conversion:25,baseBal:0,minStock:3,costPerUnit:30.5,costUnit:"base"},
+    {id:"jbg15",name:"8 mm Paper Straw",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:9,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"jbg16",name:"Aluminium Foil 10.5 micron",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:3,minStock:2,costPerUnit:300,costUnit:"base"},
+    {id:"jbg17",name:"Aluminium Pouch 6x9",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:31,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbg18",name:"Bharat Gas Empty",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:0,costPerUnit:0,costUnit:"base"},
+    {id:"jbg19",name:"Bharat Gas Full",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"jbg20",name:"Chef Cap",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbg21",name:"Cutlery Set",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:1,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbg22",name:"Dona Baty",baseUnit:"pkt",outputUnit:"pkt",conversion:25,baseBal:0,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"jbg23",name:"Garbage Bags Big",baseUnit:"pkt",outputUnit:"pcs",conversion:12,baseBal:3.705,minStock:3,costPerUnit:120,costUnit:"base"},
+    {id:"jbg24",name:"Garbage Bags Small",baseUnit:"pkt",outputUnit:"pcs",conversion:30,baseBal:2,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"jbg25",name:"Handi",baseUnit:"Box",outputUnit:"Box",conversion:1,baseBal:5,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbg26",name:"Indane Gas Empty",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:0,costPerUnit:0,costUnit:"base"},
+    {id:"jbg27",name:"Indane Gas Full",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"jbg28",name:"Medium Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:92,minStock:10,costPerUnit:5,costUnit:"output"},
+    {id:"jbg29",name:"Paper Napkin",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:48,minStock:10,costPerUnit:0,costUnit:"base"},
+    {id:"jbg30",name:"Plastic Gloves",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:0,minStock:2,costPerUnit:30,costUnit:"base"},
+    {id:"jbg31",name:"POS Roll",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:22,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbg32",name:"Rubber Bands",baseUnit:"pkt",outputUnit:"kgs",conversion:0.5,baseBal:8,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbg33",name:"Sealing Roll (Non Printed)",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:3,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbg34",name:"Sugar Sachet",baseUnit:"pkt",outputUnit:"pcs",conversion:200,baseBal:0,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbg35",name:"Wooden Stirrer",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:29,minStock:5,costPerUnit:70,costUnit:"base"},
+    {id:"jbg36",name:"Zip Lock 2.5x3",baseUnit:"kg",outputUnit:"kg",conversion:1,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+  ]},
+  {id:"av_godown",name:"Alice Villa Godown",shortName:"AV Godown",type:"godown",color:"#1565c0",emoji:"🏘️",destinations:["JB Outlet","KC DEY Outlet"],itemOrder:null,orderLocked:false,
+   items:[
+    {id:"avg1",name:"1 Pound Jhola",baseUnit:"kg",outputUnit:"pcs",conversion:33,baseBal:2.85,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"avg2",name:"Big Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:67,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"avg3",name:"Small Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:21,minStock:5,costPerUnit:0,costUnit:"base"},
+  ]},
+  {id:"rr_godown",name:"Roka Room Godown",shortName:"RR Godown",type:"godown",color:"#6a1b9a",emoji:"🏯",destinations:["JB Outlet","KC DEY Outlet"],itemOrder:null,orderLocked:false,
+   items:[
+    {id:"rrg1",name:"1 kg Sealing Cover NEW",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:39.67,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg2",name:"1 kg Sealing Cover OLD",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:20.77,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg3",name:"1 Pound Jhola",baseUnit:"kgs",outputUnit:"pcs",conversion:33,baseBal:72.639,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg4",name:"300 gms Sealing Cont.",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:134,minStock:10,costPerUnit:0,costUnit:"base"},
+    {id:"rrg5",name:"300 gms Sealing Cover NEW",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:41,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg6",name:"300 gms Sealing Cover OLD",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:3,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg7",name:"4 pc Laddu Paper Box",baseUnit:"pkt",outputUnit:"pcs",conversion:200,baseBal:15.5,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg8",name:"500 gms Paper Box",baseUnit:"pkt",outputUnit:"pcs",conversion:200,baseBal:16.38,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg9",name:"500 gms Sealing Cont.",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:37,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg10",name:"500 gms Sealing Cover NEW",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:31,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg11",name:"Blanket",baseUnit:"pc",outputUnit:"pcs",conversion:1,baseBal:7,minStock:0,costPerUnit:0,costUnit:"base"},
+    {id:"rrg12",name:"Gadda",baseUnit:"pc",outputUnit:"pcs",conversion:1,baseBal:3,minStock:0,costPerUnit:0,costUnit:"base"},
+    {id:"rrg13",name:"Medium Jhola",baseUnit:"kgs",outputUnit:"pcs",conversion:53,baseBal:58.766,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"rrg14",name:"Medium Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:36,minStock:5,costPerUnit:5,costUnit:"output"},
+    {id:"rrg15",name:"Small Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:0.36,minStock:5,costPerUnit:0,costUnit:"base"},
+  ]},
+  {id:"jb_outlet",name:"JB Outlet",shortName:"JB Outlet",type:"outlet",color:"#c62828",emoji:"🏪",destinations:["KC DEY Outlet"],itemOrder:null,orderLocked:false,
+   items:[
+    {id:"jbo1",name:"1800 ml Sealing Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo2",name:"1 kg Sealing Cover NEW",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:13,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbo3",name:"1 kg Sealing Cover OLD",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:85,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbo4",name:"1 Pound Jhola",baseUnit:"kg",outputUnit:"pcs",conversion:33,baseBal:4.57,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo5",name:"110 mm Wooden Spoon",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:2,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo6",name:"150 ml Ripple Cup",baseUnit:"pkt",outputUnit:"pcs",conversion:25,baseBal:0,minStock:2,costPerUnit:3,costUnit:"output"},
+    {id:"jbo7",name:"150 ml Ripple Cup Lid",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo8",name:"150 ml White Paper Cup",baseUnit:"pkt",outputUnit:"pcs",conversion:45,baseBal:1,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo9",name:"160 mm Wooden Spoon",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:3,minStock:2,costPerUnit:58,costUnit:"base"},
+    {id:"jbo10",name:"2 pc Thonga",baseUnit:"kg",outputUnit:"pcs",conversion:333,baseBal:0.79,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"jbo11",name:"200 ml Glass Bottle",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:5,costPerUnit:10,costUnit:"base"},
+    {id:"jbo12",name:"200 ml Lid - Glass Bottle",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:5,costPerUnit:3,costUnit:"base"},
+    {id:"jbo13",name:"250 gms Paper Box",baseUnit:"kgs",outputUnit:"pcs",conversion:64,baseBal:7.187,minStock:3,costPerUnit:3.5,costUnit:"output"},
+    {id:"jbo14",name:"3 CP Combo Tray",baseUnit:"pkt",outputUnit:"pcs",conversion:25,baseBal:4,minStock:2,costPerUnit:15,costUnit:"output"},
+    {id:"jbo15",name:"300 gms Sealing Cont.",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:200,minStock:10,costPerUnit:0,costUnit:"base"},
+    {id:"jbo16",name:"300 gms Sealing Cover NEW",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:230,minStock:10,costPerUnit:0,costUnit:"base"},
+    {id:"jbo17",name:"300 gms Sealing Cover OLD",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:175,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbo18",name:"4 pc Laddu Paper Box",baseUnit:"pkt",outputUnit:"pcs",conversion:200,baseBal:1.665,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo19",name:"4 pc Thonga",baseUnit:"kg",outputUnit:"pcs",conversion:250,baseBal:1.45,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"jbo20",name:"500 gms Paper Box",baseUnit:"pkt",outputUnit:"pcs",conversion:200,baseBal:4.332,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo21",name:"500 gms Sealing Cont.",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:100,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbo22",name:"500 gms Sealing Cover NEW",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:35,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"jbo23",name:"500 ml Zume Round Bowl",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:1,minStock:2,costPerUnit:9,costUnit:"output"},
+    {id:"jbo24",name:"7\" Sunmica Plate",baseUnit:"pkt",outputUnit:"pcs",conversion:25,baseBal:0,minStock:2,costPerUnit:30.5,costUnit:"base"},
+    {id:"jbo25",name:"8 mm Paper Straw",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:1,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo26",name:"Aluminium Foil 10.5 micron",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:0,minStock:1,costPerUnit:300,costUnit:"base"},
+    {id:"jbo27",name:"Aluminium Pouch 6x9",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:1,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo28",name:"Big Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:1,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo29",name:"Chef Cap",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"jbo30",name:"Cutlery Set",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:1,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo31",name:"Dona Baty",baseUnit:"pkt",outputUnit:"pkt",conversion:25,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo32",name:"Garbage Bags Big",baseUnit:"pkt",outputUnit:"pcs",conversion:12,baseBal:1.527,minStock:1,costPerUnit:120,costUnit:"base"},
+    {id:"jbo33",name:"Garbage Bags Small",baseUnit:"pkt",outputUnit:"pcs",conversion:30,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"jbo34",name:"Medium Jhola",baseUnit:"kgs",outputUnit:"pcs",conversion:53,baseBal:1.287,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"jbo35",name:"Medium Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:1,minStock:3,costPerUnit:5,costUnit:"output"},
+    {id:"jbo36",name:"Paper Napkin",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:3,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"jbo37",name:"Plastic Gloves",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:1,minStock:1,costPerUnit:30,costUnit:"base"},
+    {id:"jbo38",name:"POS Roll",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:2,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"jbo39",name:"Rubber Bands",baseUnit:"pkt",outputUnit:"kgs",conversion:0.5,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"jbo40",name:"Sealing Roll (Non Printed)",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"jbo41",name:"Small Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:1,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo42",name:"Sugar Sachet",baseUnit:"pkt",outputUnit:"pcs",conversion:200,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"jbo43",name:"Wooden Stirrer",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:0,minStock:2,costPerUnit:70,costUnit:"base"},
+    {id:"jbo44",name:"Zip Lock 2.5x3",baseUnit:"kg",outputUnit:"kg",conversion:1,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+  ]},
+  {id:"kcd_outlet",name:"KC DEY Outlet",shortName:"KCD Outlet",type:"outlet_ro",color:"#e65100",emoji:"🏬",destinations:[],itemOrder:null,orderLocked:false,
+   items:[
+    {id:"kcdo1",name:"1800 ml Sealing Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo2",name:"1 kg Sealing Cover NEW",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:60,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo3",name:"1 kg Sealing Cover OLD",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo4",name:"1 Pound Jhola",baseUnit:"kg",outputUnit:"pcs",conversion:33,baseBal:2.039,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo5",name:"110 mm Wooden Spoon",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:4,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo6",name:"150 ml Ripple Cup",baseUnit:"pkt",outputUnit:"pcs",conversion:25,baseBal:0,minStock:2,costPerUnit:3,costUnit:"output"},
+    {id:"kcdo7",name:"150 ml Ripple Cup Lid",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo8",name:"150 ml White Paper Cup",baseUnit:"pkt",outputUnit:"pcs",conversion:45,baseBal:4,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo9",name:"160 mm Wooden Spoon",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:1,minStock:2,costPerUnit:58,costUnit:"base"},
+    {id:"kcdo10",name:"2 pc Thonga",baseUnit:"kg",outputUnit:"pcs",conversion:333,baseBal:0.9,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo11",name:"200 ml Glass Bottle",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:30,minStock:5,costPerUnit:10,costUnit:"base"},
+    {id:"kcdo12",name:"200 ml Lid - Glass Bottle",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:30,minStock:5,costPerUnit:3,costUnit:"base"},
+    {id:"kcdo13",name:"250 gms Paper Box",baseUnit:"kgs",outputUnit:"pcs",conversion:64,baseBal:3.963,minStock:2,costPerUnit:3.5,costUnit:"output"},
+    {id:"kcdo14",name:"3 CP Combo Tray",baseUnit:"pkt",outputUnit:"pcs",conversion:25,baseBal:2,minStock:2,costPerUnit:15,costUnit:"output"},
+    {id:"kcdo15",name:"300 gms Sealing Cont.",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:55,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo16",name:"300 gms Sealing Cover NEW",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:78,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo17",name:"300 gms Sealing Cover OLD",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo18",name:"4 pc Laddu Paper Box",baseUnit:"pkt",outputUnit:"pcs",conversion:200,baseBal:1,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo19",name:"4 pc Thonga",baseUnit:"kg",outputUnit:"pcs",conversion:250,baseBal:1.187,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo20",name:"500 gms Paper Box",baseUnit:"pkt",outputUnit:"pcs",conversion:200,baseBal:2,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo21",name:"500 gms Sealing Cont.",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:0,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo22",name:"500 gms Sealing Cover NEW",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:80,minStock:5,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo23",name:"500 ml Zume Round Bowl",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:1,minStock:2,costPerUnit:9,costUnit:"output"},
+    {id:"kcdo24",name:"7\" Sunmica Plate",baseUnit:"pkt",outputUnit:"pcs",conversion:25,baseBal:0,minStock:2,costPerUnit:30.5,costUnit:"base"},
+    {id:"kcdo25",name:"8 mm Paper Straw",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:1,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo26",name:"Aluminium Foil 10.5 micron",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:1,minStock:1,costPerUnit:300,costUnit:"base"},
+    {id:"kcdo27",name:"Aluminium Pouch 6x9",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:3,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo28",name:"Big Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:2,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo29",name:"Chef Cap",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:0.5,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo30",name:"Cutlery Set",baseUnit:"pkt",outputUnit:"pcs",conversion:100,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo31",name:"Dona Baty",baseUnit:"pkt",outputUnit:"pkt",conversion:25,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo32",name:"Garbage Bags Big",baseUnit:"pkt",outputUnit:"pcs",conversion:12,baseBal:0.77,minStock:1,costPerUnit:120,costUnit:"base"},
+    {id:"kcdo33",name:"Garbage Bags Small",baseUnit:"pkt",outputUnit:"pcs",conversion:30,baseBal:1,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo34",name:"Medium Jhola",baseUnit:"kgs",outputUnit:"pcs",conversion:53,baseBal:1.79,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo35",name:"Medium Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:1,minStock:2,costPerUnit:5,costUnit:"output"},
+    {id:"kcdo36",name:"Paper Napkin",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:2,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo37",name:"Plastic Gloves",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:2,minStock:1,costPerUnit:30,costUnit:"base"},
+    {id:"kcdo38",name:"POS Roll",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:8,minStock:3,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo39",name:"Rubber Bands",baseUnit:"pkt",outputUnit:"kgs",conversion:0.5,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo40",name:"Sealing Roll (Non Printed)",baseUnit:"pcs",outputUnit:"pcs",conversion:1,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo41",name:"Small Round Container",baseUnit:"pkt",outputUnit:"pcs",conversion:50,baseBal:1,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo42",name:"Sugar Sachet",baseUnit:"pkt",outputUnit:"pcs",conversion:200,baseBal:0,minStock:2,costPerUnit:0,costUnit:"base"},
+    {id:"kcdo43",name:"Wooden Stirrer",baseUnit:"pkt",outputUnit:"pkt",conversion:1,baseBal:2,minStock:2,costPerUnit:70,costUnit:"base"},
+    {id:"kcdo44",name:"Zip Lock 2.5x3",baseUnit:"kg",outputUnit:"kg",conversion:1,baseBal:0,minStock:1,costPerUnit:0,costUnit:"base"},
+  ]},
+];
+
+// ── HELPERS ──
+const TODAY=()=>{const d=new Date();const yr=d.getFullYear();const mo=String(d.getMonth()+1).padStart(2,"0");const dy=String(d.getDate()).padStart(2,"0");return `${yr}-${mo}-${dy}`;};
+const fmt=n=>{const x=Number(n);return x%1===0?x.toLocaleString("en-IN"):x.toLocaleString("en-IN",{maximumFractionDigits:3});};
+const fmtRs=n=>`₹${Number(n).toLocaleString("en-IN",{minimumFractionDigits:0,maximumFractionDigits:2})}`;
+const itemVal=item=>{if(!item.costPerUnit||item.costPerUnit===0)return 0;return item.costUnit==="output"?item.baseBal*item.conversion*item.costPerUnit:item.baseBal*item.costPerUnit;};
+const stockStatus=item=>{
+  if(item.baseBal===0)return{label:"Nil",color:"#ef4444",bg:"#fef2f2"};
+  if(item.minStock>0&&item.baseBal<=item.minStock)return{label:"Reorder Required",color:"#d97706",bg:"#fffbeb"};
+  return{label:"In Stock",color:"#16a34a",bg:"#f0fdf4"};
+};
+const locIcon=l=>l.emoji||"📦";
+const burnRate=(itemName,txs)=>{
+  const w=new Date();w.setDate(w.getDate()-7);const ws=w.toISOString().split("T")[0];
+  const d=txs.filter(t=>t.type==="dispatch"&&t.itemName===itemName&&t.date>=ws).reduce((s,t)=>s+(t.qtyBase||0),0);
+  return d/7;
+};
+const daysLeft=(item,txs)=>{const r=burnRate(item.name,txs);if(!r)return null;return Math.round(item.baseBal/r);};
+
+const CSS=`
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Sora',sans-serif;background:#f7f4ef;color:#1a1209;}
+  ::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px;}
+  .card{background:#fffdf9;border-radius:16px;border:1px solid #e8e2d9;}
+  .btn{cursor:pointer;border:none;font-family:'Sora',sans-serif;font-weight:600;font-size:13px;border-radius:10px;padding:11px 20px;transition:all .15s;}
+  .btn-dark{background:#1a1209;color:#fffdf9;}.btn-ghost{background:#f0efe9;color:#555;border:1px solid #e0d9ce;}.btn-danger{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;}
+  .chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.04em;}
+  .nav-item{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 9px;border-radius:11px;transition:all .15s;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#b0a898;}
+  .nav-item.active{background:#1a1209;color:#fffdf9;}
+  .loc-pill{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;white-space:nowrap;}
+  .inp{width:100%;padding:11px 14px;background:#f7f4ef;border:1.5px solid #e0d9ce;border-radius:10px;font-family:'Sora',sans-serif;font-size:14px;color:#111;outline:none;}
+  .inp:focus{border-color:#1a1209;}
+  .overlay{position:fixed;inset:0;background:rgba(26,18,9,.65);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;z-index:200;}
+  .sheet{animation:slideUp .25s cubic-bezier(.22,.68,0,1.2);}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  @keyframes toastIn{from{transform:translateX(-50%) translateY(8px);opacity:0;}to{transform:translateX(-50%) translateY(0);opacity:1;}}
+  input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+  input[type=number]{-moz-appearance:textfield;}
+  select{width:100%;padding:11px 14px;background:#f7f4ef;border:1.5px solid #e0d9ce;border-radius:10px;font-family:'Sora',sans-serif;font-size:14px;color:#111;outline:none;}
+  .val-bar{height:5px;border-radius:3px;background:#ede8df;overflow:hidden;margin-top:5px;}
+  .val-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#16a34a,#22c55e);}
+  .item-card{background:#fff;border:1px solid #e8e2d9;border-radius:14px;margin-bottom:10px;overflow:hidden;}
+  .item-header{padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .item-expanded{border-top:1px solid #f0efe9;padding:14px 16px;background:#faf7f1;animation:expandIn .2s ease;}
+  @keyframes expandIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+  .loc-btn{flex:1;padding:9px 6px;border-radius:8px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;border:1.5px solid #e0d9ce;background:#f5f4f0;color:#666;transition:all .15s;font-family:'Sora',sans-serif;}
+  .loc-btn.active{background:#1a1209;color:#fffdf9;border-color:#111;}
+  .tab-btn{flex:1;padding:9px;border-radius:9px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;border:1.5px solid transparent;transition:all .15s;font-family:'Sora',sans-serif;}
+  .tab-out{background:#fff7ed;color:#c2410c;border-color:#fed7aa;}.tab-out.active{background:#c2410c;color:#fff;border-color:#c2410c;}
+  .tab-in{background:#f0fdf4;color:#15803d;border-color:#bbf7d0;}.tab-in.active{background:#15803d;color:#fff;border-color:#15803d;}
+  .tab-adj{background:#eef2ff;color:#4338ca;border-color:#c7d2fe;}.tab-adj.active{background:#4338ca;color:#fff;border-color:#4338ca;}
+  .emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px;}
+  .emoji-opt{padding:8px;border-radius:10px;font-size:20px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all .15s;}
+  .emoji-opt:hover{background:#f0ebe0;}.emoji-opt.selected{border-color:#1a1209;background:#f0ebe0;}
+  .color-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;}
+  .color-opt{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s;}
+  .color-opt.selected{border-color:#1a1209;transform:scale(1.15);}
+  .drag-item{transition:opacity .15s;}
+  .drag-item.dragging{opacity:0.4;}
+  .report-card{background:#fff;border:1px solid #e8e2d9;border-radius:14px;padding:16px;margin-bottom:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s;}
+  .report-card:hover{box-shadow:0 2px 12px rgba(26,18,9,.07);}
+`;
+
+function SheetHandle(){return h("div",{style:{width:36,height:4,background:"#e0d9ce",borderRadius:2,margin:"0 auto 18px"}});}
+function Field({label,children,style={}}){return h("div",{style:{marginBottom:14,...style}},h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:5}},label),children);}
+function LocBtns({options,value,onChange}){return h("div",{style:{display:"flex",gap:6,background:"#f7f4ef",padding:3,borderRadius:10}},...options.map(([v,l])=>h("button",{key:v,className:`loc-btn${value===v?" active":""}`,onClick:()=>onChange(v)},l)));}
+
+function App(){
+  const [locations,setLocations]=useState([]);
+  const [masterItems,setMasterItems]=useState([]);
+  const [transactions,setTransactions]=useState([]);
+  const [activeLocId,setActiveLocId]=useState(null);
+  const [view,setView]=useState("home");
+  const [modal,setModal]=useState(null);
+  const [expandedItemId,setExpandedItemId]=useState(null);
+  const [dashModal,setDashModal]=useState(null);
+  const [adjustQty,setAdjustQty]=useState("");
+  const [entryType,setEntryType]=useState("out");
+  const [entryDest,setEntryDest]=useState("");
+  const [entryQty,setEntryQty]=useState("");
+  const [entryUnit,setEntryUnit]=useState("base");
+  const [entryNote,setEntryNote]=useState("");
+  const [search,setSearch]=useState("");
+  const [toast,setToast]=useState(null);
+  const [loading,setLoading]=useState(true);
+  const [addItemForm,setAddItemForm]=useState({name:"",baseUnit:"pkt",outputUnit:"pcs",conversion:1,baseBal:"",minStock:5,costPerUnit:"",costUnit:"base",locId:""});
+  const [editItem,setEditItem]=useState(null);
+  const [editLoc,setEditLoc]=useState(null);
+  const [deleteConfirm,setDeleteConfirm]=useState(null);
+  const [reportView,setReportView]=useState(null);
+  const [reportFilter,setReportFilter]=useState({date:"today",type:"all",loc:"all",search:"",customFrom:"",customTo:""});
+  const [smFilter,setSmFilter]=useState({date:"week",loc:"all",customFrom:"",customTo:"",showCustom:false});
+  const [consFilter,setConsFilter]=useState({date:"week",loc:"all",customFrom:"",customTo:"",showCustom:false});
+  const [smExpandedId,setSmExpandedId]=useState(null);
+  const [valLocId,setValLocId]=useState(null);
+  const [editPriceItem,setEditPriceItem]=useState(null);
+  const [sortMode,setSortMode]=useState("az");
+  const [eodMode,setEodMode]=useState(false);
+  const [eodCounts,setEodCounts]=useState({});
+  const [purchaseMode,setPurchaseMode]=useState(false);
+  const [purchaseCounts,setPurchaseCounts]=useState({});
+  const [addLocForm,setAddLocForm]=useState({name:"",shortName:"",type:"godown",color:"#16a34a",emoji:"🏭",destinations:[],copyFrom:""});
+  const [confirmClose,setConfirmClose]=useState(null);
+  const [editMasterItem,setEditMasterItem]=useState(null);
+  const [masterView,setMasterView]=useState(false);
+  const [migrationDone,setMigrationDone]=useState(false);
+  const [dashDetailModal,setDashDetailModal]=useState(null); // 'dispatch'|'receive'|'purchase'|'adjusted'
+  const [isDesktop,setIsDesktop]=useState(window.innerWidth>=768);
+
+  useEffect(()=>{
+    const handleResize=()=>setIsDesktop(window.innerWidth>=768);
+    window.addEventListener("resize",handleResize);
+    return ()=>window.removeEventListener("resize",handleResize);
+  },[]);
+
+  const showToast=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast(null),3000);};
+  const activeLoc=locations.find(l=>l.id===activeLocId);
+
+  useEffect(()=>{
+    (async()=>{try{for(const loc of SEED){const r=doc(db,"locations",loc.id);const s=await getDoc(r);if(!s.exists())await setDoc(r,loc);}}catch(e){console.error(e);}})();
+  },[]);
+
+  useEffect(()=>{
+    const unsub=onSnapshot(collection(db,"locations"),snap=>{
+      const data=snap.docs.map(d=>({...d.data(),id:d.id}));
+      const ord=["jb_godown","av_godown","rr_godown","jb_outlet","kcd_outlet"];
+      data.sort((a,b)=>ord.indexOf(a.id)-ord.indexOf(b.id));
+      setLocations(data);
+      if(data.length>0&&!activeLocId)setActiveLocId(data[0].id);
+      setLoading(false);
+    });
+    return unsub;
+  },[]);
+
+  useEffect(()=>{
+    const q=query(collection(db,"transactions"),orderBy("createdAt","desc"));
+    const unsub=onSnapshot(q,snap=>{setTransactions(snap.docs.map(d=>({...d.data(),id:d.id})));});
+    return unsub;
+  },[]);
+
+  // Master items listener
+  useEffect(()=>{
+    const unsub=onSnapshot(collection(db,"masterItems"),snap=>{
+      setMasterItems(snap.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>a.name.localeCompare(b.name)));
+    });
+    return unsub;
+  },[]);
+
+  // v5.0 Migration — runs once, properly locked
+  useEffect(()=>{
+    if(locations.length===0)return;
+    (async()=>{
+      try{
+        // Check lock first — if already done, skip entirely
+        const metaDoc=await getDoc(doc(db,"meta","v5migration"));
+        if(metaDoc.exists()&&metaDoc.data()?.done===true){setMigrationDone(true);return;}
+
+        // Step 1: Load all existing master items from Firebase
+        const existingSnap=await getDocs(collection(db,"masterItems"));
+        const existingMasters={};
+        existingSnap.docs.forEach(d=>{const m={...d.data(),id:d.id};existingMasters[m.name]=m;});
+
+        // Step 2: Build master map — reuse existing if name matches, create new only if needed
+        const masterMap={};
+        let idx=0;
+        for(const loc of locations){
+          for(const item of (loc.items||[])){
+            if(!masterMap[item.name]){
+              if(existingMasters[item.name]){
+                masterMap[item.name]=existingMasters[item.name];
+              } else {
+                // Use idx + random to avoid ID collisions
+                const miId=`mi_${item.name.toLowerCase().replace(/[^a-z0-9]/g,"_").slice(0,20)}_${idx}_${Math.random().toString(36).slice(2,7)}`;
+                masterMap[item.name]={id:miId,name:item.name,baseUnit:item.baseUnit,outputUnit:item.outputUnit,conversion:item.conversion,costPerUnit:item.costPerUnit||0,costUnit:item.costUnit||"base"};
+                await setDoc(doc(db,"masterItems",miId),masterMap[item.name]);
+                idx++;
+              }
+            }
+          }
+        }
+
+        // Step 3: Update all location items with correct masterItemId
+        for(const loc of locations){
+          const updatedItems=(loc.items||[]).map(item=>({...item,masterItemId:masterMap[item.name]?.id||item.masterItemId||null}));
+          await setDoc(doc(db,"locations",loc.id),{items:updatedItems},{merge:true});
+        }
+
+        // Step 4: Delete orphaned master items
+        const allLinkedIds=new Set(locations.flatMap(l=>(l.items||[]).map(i=>masterMap[i.name]?.id)).filter(Boolean));
+        for(const d of existingSnap.docs){
+          if(!allLinkedIds.has(d.id)){await deleteDoc(doc(db,"masterItems",d.id));}
+        }
+
+        // Step 5: Write lock
+        await setDoc(doc(db,"meta","v5migration"),{done:true,at:serverTimestamp()});
+        setMigrationDone(true);
+        showToast("✓ Master catalog ready");
+      }catch(e){console.error("Migration error",e);}
+    })();
+  },[locations.length]);
+
+  const updateLocItems=async(locId,newItems)=>await setDoc(doc(db,"locations",locId),{items:newItems},{merge:true});
+
+  const handleEntry=async(item,loc)=>{
+    const qty=parseFloat(entryQty);
+    if(!qty||qty<=0)return showToast("Enter a valid quantity","error");
+    if(entryType==="out"){
+      const actualQty=entryUnit==="output"?qty/item.conversion:qty;
+      if(actualQty>item.baseBal+0.0001)return showToast("Not enough stock!","error");
+      await updateLocItems(loc.id,loc.items.map(i=>i.id===item.id?{...i,baseBal:+(i.baseBal-actualQty).toFixed(4),lastUpdated:TODAY()}:i));
+      const dLoc=locations.find(l=>l.name===entryDest);
+      if(dLoc){
+        const dItem=dLoc.items.find(i=>i.name===item.name);
+        if(dItem){
+          // Item exists — update balance
+          await updateLocItems(dLoc.id,dLoc.items.map(i=>i.id===dItem.id?{...i,baseBal:+(i.baseBal+actualQty).toFixed(4)}:i));
+        } else {
+          // Auto-create item at destination with collision-safe ID
+          const newItem={...item,id:`i_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,baseBal:+actualQty.toFixed(4),minStock:0,lastUpdated:TODAY()};
+          await updateLocItems(dLoc.id,[...(dLoc.items||[]),newItem]);
+          showToast(`"${item.name}" auto-added to ${dLoc.name} ✓`);
+        }
+      }
+      await addDoc(collection(db,"transactions"),{itemId:item.id,itemName:item.name,srcLocId:loc.id,srcLocName:loc.name,destLocId:dLoc?.id||"",destLocName:entryDest,locId:loc.id,locName:loc.name,type:"dispatch",qtyBase:actualQty,qtyDisplay:`${qty} ${entryUnit==="output"?item.outputUnit:item.baseUnit}`,dest:entryDest,note:entryNote,date:TODAY(),createdAt:serverTimestamp()});
+      showToast(`Dispatched to ${entryDest} ✓`);
+    } else {
+      await updateLocItems(loc.id,loc.items.map(i=>i.id===item.id?{...i,baseBal:+(i.baseBal+qty).toFixed(4),lastUpdated:TODAY()}:i));
+      const sLoc=locations.find(l=>l.name===entryDest);
+      if(sLoc){const sItem=sLoc.items.find(i=>i.name===item.name);if(sItem)await updateLocItems(sLoc.id,sLoc.items.map(i=>i.id===sItem.id?{...i,baseBal:+(i.baseBal-qty).toFixed(4)}:i));}
+      await addDoc(collection(db,"transactions"),{itemId:item.id,itemName:item.name,srcLocId:sLoc?.id||"external",srcLocName:entryDest||"External",destLocId:loc.id,destLocName:loc.name,locId:loc.id,locName:loc.name,type:"receive",qtyBase:qty,qtyDisplay:`${qty} ${item.baseUnit}`,dest:loc.name,note:entryNote,date:TODAY(),createdAt:serverTimestamp()});
+      showToast("Stock received ✓");
+    }
+    setExpandedItemId(null);setEntryQty("");setEntryNote("");
+  };
+
+  const handleAdjust=async(item,loc)=>{
+    const phys=parseFloat(adjustQty);
+    if(isNaN(phys)||phys<0)return showToast("Enter a valid count","error");
+    const diff=+(phys-item.baseBal).toFixed(4);
+    if(diff===0)return showToast("No change — already matches","error");
+    // Step 1: update balance
+    await updateLocItems(loc.id,loc.items.map(i=>i.id===item.id?{...i,baseBal:+phys.toFixed(4),lastUpdated:TODAY()}:i));
+    // Step 2: log — only after balance update succeeds
+    await addDoc(collection(db,"transactions"),{itemId:item.id,itemName:item.name,locId:loc.id,locName:loc.name,type:"adjustment",qtyBase:diff,qtyDisplay:`${diff>0?"+":""}${fmt(diff)} ${item.baseUnit}`,fromBal:item.baseBal,toBal:+phys.toFixed(4),note:`Physical count: ${phys} (was ${fmt(item.baseBal)})`,date:TODAY(),createdAt:serverTimestamp()});
+    showToast(`Adjusted: ${fmt(item.baseBal)} → ${fmt(phys)} ${item.baseUnit} ✓`);
+    setExpandedItemId(null);setAdjustQty("");
+  };
+
+  const handleDeleteTx=async(tx)=>{
+    try{
+      if(tx.type==="dispatch"){
+        // Restore source stock
+        const sLoc=locations.find(l=>l.id===tx.srcLocId||l.id===tx.locId);
+        if(sLoc){const si=sLoc.items.find(i=>i.name===tx.itemName);if(si)await updateLocItems(sLoc.id,sLoc.items.map(i=>i.name===tx.itemName?{...i,baseBal:+(i.baseBal+(tx.qtyBase||0)).toFixed(4)}:i));}
+        // Deduct destination stock — use destLocId first, fall back to name
+        const dLoc=locations.find(l=>l.id===tx.destLocId)||(tx.dest?locations.find(l=>l.name===tx.dest):null);
+        if(dLoc){const di=dLoc.items.find(i=>i.name===tx.itemName);if(di)await updateLocItems(dLoc.id,dLoc.items.map(i=>i.name===tx.itemName?{...i,baseBal:Math.max(0,+(i.baseBal-(tx.qtyBase||0)).toFixed(4))}:i));}
+      } else if(tx.type==="receive"){
+        const loc=locations.find(l=>l.id===tx.locId);
+        if(loc){await updateLocItems(loc.id,loc.items.map(i=>i.name===tx.itemName?{...i,baseBal:Math.max(0,+(i.baseBal-(tx.qtyBase||0)).toFixed(4))}:i));}
+        const sLoc=locations.find(l=>l.id===tx.srcLocId);
+        if(sLoc){const si=sLoc.items.find(i=>i.name===tx.itemName);if(si)await updateLocItems(sLoc.id,sLoc.items.map(i=>i.name===tx.itemName?{...i,baseBal:+(i.baseBal+(tx.qtyBase||0)).toFixed(4)}:i));}
+      } else if(tx.type==="adjustment"){
+        const loc=locations.find(l=>l.id===tx.locId);
+        if(loc){await updateLocItems(loc.id,loc.items.map(i=>i.name===tx.itemName?{...i,baseBal:+(tx.fromBal||0).toFixed(4)}:i));}
+      } else if(tx.type==="purchase"){
+        const loc=locations.find(l=>l.id===tx.locId);
+        if(loc){await updateLocItems(loc.id,loc.items.map(i=>i.name===tx.itemName?{...i,baseBal:Math.max(0,+(i.baseBal-(tx.qtyBase||0)).toFixed(4))}:i));}
+      } else if(tx.type==="consumption"){
+        const loc=locations.find(l=>l.id===tx.locId);
+        if(loc){await updateLocItems(loc.id,loc.items.map(i=>i.name===tx.itemName?{...i,baseBal:+(i.baseBal+Math.abs(tx.qtyBase||0)).toFixed(4)}:i));}
+      }
+      await deleteDoc(doc(db,"transactions",tx.id));
+      showToast("Deleted & stock reversed ✓");setDeleteConfirm(null);
+    }catch(e){showToast("Error","error");console.error(e);}
+  };
+
+  const handleAddItem=async()=>{
+    if(!addItemForm.name.trim())return showToast("Name required","error");
+    const targetLocId=addItemForm.locId||activeLocId;
+    if(!targetLocId)return showToast("Please select a location","error");
+    const targetLoc=locations.find(l=>l.id===targetLocId);
+    if(!targetLoc)return showToast("Location not found","error");
+    // Check if master item already exists for this name
+    let masterItemId=masterItems.find(m=>m.name.toLowerCase()===addItemForm.name.trim().toLowerCase())?.id||null;
+    if(!masterItemId){
+      const miId=`mi_${addItemForm.name.trim().toLowerCase().replace(/[^a-z0-9]/g,"_").slice(0,20)}_${Date.now().toString(36)}`;
+      const mi={id:miId,name:addItemForm.name.trim(),baseUnit:addItemForm.baseUnit,outputUnit:addItemForm.outputUnit,conversion:Number(addItemForm.conversion)||1,costPerUnit:Number(addItemForm.costPerUnit)||0,costUnit:addItemForm.costUnit};
+      await setDoc(doc(db,"masterItems",miId),mi);
+      masterItemId=miId;
+    }
+    const ni={id:`i_${Date.now()}`,name:addItemForm.name.trim(),baseUnit:addItemForm.baseUnit,outputUnit:addItemForm.outputUnit,conversion:Number(addItemForm.conversion)||1,baseBal:Number(addItemForm.baseBal)||0,minStock:Number(addItemForm.minStock)||0,costPerUnit:Number(addItemForm.costPerUnit)||0,costUnit:addItemForm.costUnit,masterItemId};
+    await updateLocItems(targetLocId,[...(targetLoc.items||[]),ni]);
+    showToast(`${addItemForm.name} added to ${targetLoc.name} ✓`);
+    setAddItemForm({name:"",baseUnit:"pkt",outputUnit:"pcs",conversion:1,baseBal:"",minStock:5,costPerUnit:"",costUnit:"base",locId:""});
+    setModal(null);
+  };
+
+  // Edit master item — propagates name/unit/conversion/price to ALL locations
+  const handleEditMasterItem=async()=>{
+    if(!editMasterItem.name.trim())return showToast("Name required","error");
+    // Update master item doc
+    await setDoc(doc(db,"masterItems",editMasterItem.id),{
+      name:editMasterItem.name,baseUnit:editMasterItem.baseUnit,outputUnit:editMasterItem.outputUnit,
+      conversion:Number(editMasterItem.conversion)||1,costPerUnit:Number(editMasterItem.costPerUnit)||0,costUnit:editMasterItem.costUnit
+    });
+    // Propagate to all locations that have this master item
+    let updatedCount=0;
+    for(const loc of locations){
+      const hasItem=(loc.items||[]).some(i=>i.masterItemId===editMasterItem.id);
+      if(hasItem){
+        const updatedItems=loc.items.map(i=>i.masterItemId===editMasterItem.id
+          ?{...i,name:editMasterItem.name,baseUnit:editMasterItem.baseUnit,outputUnit:editMasterItem.outputUnit,conversion:Number(editMasterItem.conversion)||1,costPerUnit:Number(editMasterItem.costPerUnit)||0,costUnit:editMasterItem.costUnit}
+          :i);
+        await updateLocItems(loc.id,updatedItems);
+        updatedCount++;
+      }
+    }
+    showToast(`Updated in ${updatedCount} location${updatedCount!==1?"s":""} ✓`);
+    setEditMasterItem(null);
+    setModal(null);
+  };
+
+  const handleEditItem=async()=>{
+    // v5.0 — only minStock is edited locally. Name/units/price are master-controlled.
+    await updateLocItems(activeLocId,(activeLoc.items||[]).map(i=>i.id===editItem.id?{...i,minStock:Number(editItem.minStock)||0}:i));
+    showToast("Min stock updated ✓");setModal(null);setEditItem(null);
+  };
+
+  const handleDeleteItem=async()=>{
+    await updateLocItems(activeLocId,(activeLoc.items||[]).filter(i=>i.id!==editItem.id));
+    showToast(`${editItem.name} deleted ✓`);setModal(null);setEditItem(null);setExpandedItemId(null);
+  };
+
+  const handleEditLoc=async()=>{
+    if(!editLoc.name.trim())return showToast("Name required","error");
+    await setDoc(doc(db,"locations",editLoc.id),{name:editLoc.name,shortName:editLoc.shortName||editLoc.name,emoji:editLoc.emoji,color:editLoc.color},{merge:true});
+    showToast("Location updated ✓");setModal(null);setEditLoc(null);
+  };
+
+  const handleAddLocation=async()=>{
+    if(!addLocForm.name.trim())return showToast("Name required","error");
+    if(!addLocForm.shortName.trim())return showToast("Short name required","error");
+    const newId=`loc_${Date.now()}`;
+    let items=[];
+    if(addLocForm.copyFrom){
+      const src=locations.find(l=>l.id===addLocForm.copyFrom);
+      if(src) items=(src.items||[]).map(i=>({...i,id:`${newId}_${i.id}`,baseBal:0}));
+    }
+    const newLoc={id:newId,name:addLocForm.name,shortName:addLocForm.shortName,type:addLocForm.type,color:addLocForm.color,emoji:addLocForm.emoji,destinations:addLocForm.destinations,items};
+    await setDoc(doc(db,"locations",newId),newLoc);
+    showToast(`${addLocForm.name} added ✓`);
+    setModal(null);
+    setAddLocForm({name:"",shortName:"",type:"godown",color:"#16a34a",emoji:"🏭",destinations:[],copyFrom:""});
+  };
+
+  const handleEODSubmit=async()=>{
+    const entries=Object.entries(eodCounts).filter(([,v])=>v!==""&&!isNaN(parseFloat(v)));
+    if(entries.length===0)return showToast("No counts entered","error");
+    let updated=0;
+    const newItems=[...(activeLoc.items||[])];
+    const txBatch=[];
+    const isOutlet=activeLoc.type==="outlet"||activeLoc.type==="outlet_ro";
+    for(const [itemId,valStr] of entries){
+      const phys=parseFloat(valStr);
+      if(isNaN(phys)||phys<0)continue;
+      const idx=newItems.findIndex(i=>i.id===itemId);
+      if(idx===-1)continue;
+      const item=newItems[idx];
+      const diff=+(phys-item.baseBal).toFixed(4);
+      if(diff===0)continue;
+      newItems[idx]={...item,baseBal:+phys.toFixed(4),lastUpdated:TODAY()};
+      // Outlets: ALL diffs log as consumption. Godowns: ALL diffs log as adjustment.
+      const txType=isOutlet?"consumption":"adjustment";
+      txBatch.push({itemId:item.id,itemName:item.name,locId:activeLoc.id,locName:activeLoc.name,type:txType,qtyBase:diff,qtyDisplay:`${diff>0?"+":""}${fmt(diff)} ${item.baseUnit}`,fromBal:item.baseBal,toBal:+phys.toFixed(4),note:`${isOutlet?"End of day":"Stock check"}: ${phys} (was ${fmt(item.baseBal)})`,date:TODAY(),createdAt:serverTimestamp()});
+      updated++;
+    }
+    if(updated===0)return showToast("No changes — all counts match","error");
+    // Log transactions FIRST, then update stock (safer order)
+    for(const tx of txBatch) await addDoc(collection(db,"transactions"),tx);
+    await updateLocItems(activeLoc.id,newItems);
+    showToast(`${updated} item${updated>1?"s":""} updated ✓`);
+    setEodMode(false);setEodCounts({});
+  };
+
+  const handlePurchaseSubmit=async()=>{
+    const entries=Object.entries(purchaseCounts).filter(([,v])=>v!==""&&!isNaN(parseFloat(v))&&parseFloat(v)>0);
+    if(entries.length===0)return showToast("No quantities entered","error");
+    let updated=0;
+    const newItems=[...(activeLoc.items||[])];
+    for(const [itemId,valStr] of entries){
+      const qty=parseFloat(valStr);
+      if(isNaN(qty)||qty<=0)continue;
+      const idx=newItems.findIndex(i=>i.id===itemId);
+      if(idx===-1)continue;
+      const item=newItems[idx];
+      newItems[idx]={...item,baseBal:+(item.baseBal+qty).toFixed(4),lastUpdated:TODAY()};
+      await addDoc(collection(db,"transactions"),{itemId:item.id,itemName:item.name,locId:activeLoc.id,locName:activeLoc.name,type:"purchase",qtyBase:qty,qtyDisplay:`+${fmt(qty)} ${item.baseUnit}`,note:`Purchased: +${fmt(qty)} ${item.baseUnit}`,date:TODAY(),createdAt:serverTimestamp()});
+      updated++;
+    }
+    if(updated===0)return showToast("No valid quantities","error");
+    await updateLocItems(activeLoc.id,newItems);
+    showToast(`${updated} item${updated>1?"s":""} purchased ✓`);
+    setPurchaseMode(false);setPurchaseCounts({});
+  };
+
+  const handleSavePrice=async()=>{
+    const loc=locations.find(l=>(l.items||[]).some(i=>i.id===editPriceItem.id));
+    if(!loc)return;
+    await updateLocItems(loc.id,loc.items.map(i=>i.id===editPriceItem.id?{...i,costPerUnit:Number(editPriceItem.costPerUnit)||0,costUnit:editPriceItem.costUnit}:i));
+    showToast("Price updated ✓");setEditPriceItem(null);
+  };
+
+  // COMPUTED
+  const locValue=loc=>(loc.items||[]).reduce((s,i)=>s+itemVal(i),0);
+  const totalValue=locations.reduce((s,l)=>s+locValue(l),0);
+  const todayTx=transactions.filter(t=>t.date===TODAY());
+  const activeLowStock=(activeLoc?.items||[]).filter(i=>i.minStock>0&&i.baseBal<=i.minStock);
+
+  const sortedItems=(loc)=>{
+    const items=[...(loc?.items||[])];
+    if(sortMode==="az") items.sort((a,b)=>a.name.localeCompare(b.name));
+    else if(sortMode==="za") items.sort((a,b)=>b.name.localeCompare(a.name));
+    else if(sortMode==="high") items.sort((a,b)=>b.baseBal-a.baseBal);
+    else if(sortMode==="low") items.sort((a,b)=>a.baseBal-b.baseBal);
+    return items;
+  };
+
+  // Report filters
+  const applyReportFilter=(txList)=>{
+    return txList.filter(t=>{
+      if(reportFilter.type!=="all"&&t.type!==reportFilter.type)return false;
+      if(reportFilter.loc!=="all"&&t.locId!==reportFilter.loc&&t.srcLocId!==reportFilter.loc&&t.destLocId!==reportFilter.loc)return false;
+      if(reportFilter.search&&!t.itemName?.toLowerCase().includes(reportFilter.search.toLowerCase()))return false;
+      if(reportFilter.date==="today"&&t.date!==TODAY())return false;
+      if(reportFilter.date==="week"){const d=new Date();d.setDate(d.getDate()-7);if(t.date<d.toISOString().split("T")[0])return false;}
+      if(reportFilter.date==="month"){if(!t.date?.startsWith(new Date().toISOString().slice(0,7)))return false;}
+      return true;
+    });
+  };
+
+  // Analytics — Most Dispatched is THIS WEEK only
+  const weekAgo=(()=>{const d=new Date();d.setDate(d.getDate()-6);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;})();
+  const itemStatsWeek={};
+  transactions.filter(t=>t.date>=weekAgo).forEach(t=>{
+    if(!itemStatsWeek[t.itemName])itemStatsWeek[t.itemName]={name:t.itemName,dispatched:0};
+    if(t.type==="dispatch") itemStatsWeek[t.itemName].dispatched+=t.qtyBase||0;
+  });
+  const mostUsed=Object.values(itemStatsWeek).filter(s=>s.dispatched>0).sort((a,b)=>b.dispatched-a.dispatched).slice(0,5);
+
+  // Month over month
+  const thisMonth=TODAY().slice(0,7);
+  const lastMonthD=new Date();lastMonthD.setMonth(lastMonthD.getMonth()-1);
+  const lastMonth=`${lastMonthD.getFullYear()}-${String(lastMonthD.getMonth()+1).padStart(2,"0")}`;
+  const thisMoTx=transactions.filter(t=>t.date?.startsWith(thisMonth)&&t.type==="dispatch").length;
+  const lastMoTx=transactions.filter(t=>t.date?.startsWith(lastMonth)&&t.type==="dispatch").length;
+  const momChange=lastMoTx>0?Math.round(((thisMoTx-lastMoTx)/lastMoTx)*100):null;
+
+  // All unique item names across all locations (for stock summary)
+  const allItemNames=[...new Set(locations.flatMap(l=>(l.items||[]).map(i=>i.name)))].sort();
+
+  const filteredItems=sortedItems(activeLoc).filter(i=>i.name.toLowerCase().includes(search.toLowerCase()));
+
+  // ── REPORT HELPERS ──
+  const getDateRange=(filter)=>{
+    const today=TODAY();
+    const localDate=(d)=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    if(filter.date==="today") return {from:today,to:today};
+    if(filter.date==="week"){const d=new Date();d.setDate(d.getDate()-6);return {from:localDate(d),to:today};}
+    if(filter.date==="month"){const d=new Date();d.setDate(1);return {from:localDate(d),to:today};}
+    if(filter.date==="lastmonth"){const s=new Date();s.setMonth(s.getMonth()-1);s.setDate(1);const e=new Date();e.setDate(0);return {from:localDate(s),to:localDate(e)};}
+    if(filter.date==="custom"&&filter.customFrom&&filter.customTo) return {from:filter.customFrom,to:filter.customTo};
+    return {from:"2000-01-01",to:today};
+  };
+
+  const txInRange=(t,range)=>t.date>=range.from&&t.date<=range.to;
+
+  // Stock movement report data
+  const getSmData=()=>{
+    const range=getDateRange(smFilter);
+    const locFilter=smFilter.loc;
+    // Get all items across all locations
+    const result=[];
+    locations.forEach(loc=>{
+      if(locFilter!=="all"&&loc.id!==locFilter)return;
+      (loc.items||[]).forEach(item=>{
+        const locTx=transactions.filter(t=>txInRange(t,range)&&t.itemName===item.name&&(t.locId===loc.id||t.srcLocId===loc.id||t.destLocId===loc.id));
+        // For this location's perspective
+        let purchased=0,received=0,dispatched=0,adjusted=0,consumed=0;
+        locTx.forEach(t=>{
+          if(t.type==="purchase"&&t.locId===loc.id) purchased+=t.qtyBase||0;
+          else if(t.type==="receive"&&t.locId===loc.id) received+=t.qtyBase||0;
+          else if(t.type==="dispatch"&&t.locId===loc.id) dispatched+=t.qtyBase||0;
+          else if(t.type==="adjustment"&&t.locId===loc.id) adjusted+=t.qtyBase||0;
+          else if(t.type==="consumption"&&t.locId===loc.id) consumed+=Math.abs(t.qtyBase||0);
+        });
+        const totalMovement=purchased+received+dispatched+consumed+Math.abs(adjusted);
+        if(totalMovement===0&&locFilter==="all")return; // skip zero-movement items in all-locations view
+        const isOutlet=loc.type==="outlet"||loc.type==="outlet_ro";
+        const mainMovement=isOutlet?consumed:dispatched;
+        // opening = closing - net (approximate from transactions)
+        const netChange=purchased+received-dispatched-consumed+adjusted;
+        const closing=item.baseBal;
+        const opening=+(closing-netChange).toFixed(4);
+        result.push({itemId:item.id,name:item.name,unit:item.baseUnit,locId:loc.id,locName:loc.name,locColor:loc.color,locType:loc.type,isOutlet,purchased:+purchased.toFixed(4),received:+received.toFixed(4),dispatched:+dispatched.toFixed(4),consumed:+consumed.toFixed(4),adjusted:+adjusted.toFixed(4),opening,closing,mainMovement:+mainMovement.toFixed(4),totalMovement:+totalMovement.toFixed(4),minStock:item.minStock});
+      });
+    });
+    return result.sort((a,b)=>b.mainMovement-a.mainMovement);
+  };
+
+  // Consumption report data — outlets only
+  const getConsData=()=>{
+    const range=getDateRange(consFilter);
+    const locFilter=consFilter.loc;
+    const result=[];
+    locations.filter(l=>l.type==="outlet"||l.type==="outlet_ro").forEach(loc=>{
+      if(locFilter!=="all"&&loc.id!==locFilter)return;
+      (loc.items||[]).forEach(item=>{
+        const consumed=transactions.filter(t=>txInRange(t,range)&&t.itemName===item.name&&t.locId===loc.id&&t.type==="consumption").reduce((s,t)=>s+Math.abs(t.qtyBase||0),0);
+        if(consumed===0)return;
+        result.push({name:item.name,unit:item.baseUnit,locId:loc.id,locName:loc.name,locColor:loc.color,consumed:+consumed.toFixed(4),closing:item.baseBal,minStock:item.minStock});
+      });
+    });
+    return result.sort((a,b)=>b.consumed-a.consumed);
+  };
+
+  const txTypeLabel=(type)=>type==="dispatch"?"Dispatch":type==="receive"?"Receive":type==="adjustment"?"Adjustment":type==="purchase"?"Purchase":type==="consumption"?"Consumption":"Unknown";
+  const txTypeIcon=(type)=>type==="dispatch"?"📤":type==="receive"?"📥":type==="adjustment"?"⚖️":type==="purchase"?"📦":type==="consumption"?"🍽":"•";
+  const txTypeColor=(type)=>type==="dispatch"?"#fff7ed":type==="receive"?"#f0fdf4":type==="adjustment"?"#eef2ff":type==="purchase"?"#f0fdf4":type==="consumption"?"#fef9c3":"#f5f5f5";
+  const txTypeTextColor=(type)=>type==="dispatch"?"#c2410c":type==="receive"?"#15803d":type==="adjustment"?"#4338ca":type==="purchase"?"#16a34a":type==="consumption"?"#854d0e":"#666";
+
+  if(loading)return h("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"100vh",background:"#f7f4ef",gap:12}},
+    h("div",{style:{fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:18,letterSpacing:"0.08em"}},"PACKTRACK"),
+    h("div",{style:{fontSize:11,color:"#9e9080"}})
+  );
+
+  const NavItem=({id,icon,label})=>h("div",{className:`nav-item${view===id?" active":""}`,onClick:()=>{setView(id);setReportView(null);setMasterView(false);}},h("span",{style:{fontSize:15,lineHeight:1}},icon),label);
+  const txIcon=txTypeIcon;
+  const txColor=txTypeColor;
+  const txTextColor=txTypeTextColor;
+  const txLabel=txTypeLabel;
+
+  return h("div",{style:{fontFamily:"'Sora',sans-serif",background:isDesktop?"#2a1f12":"#f7f4ef",minHeight:"100vh",color:"#1a1209"}},
+    h("style",null,CSS),
+
+    // ── DESKTOP LAYOUT ──
+    isDesktop?h("div",{style:{display:"flex",height:"100vh",overflow:"hidden"}},
+
+      // Slim sidebar
+      h("div",{style:{width:72,background:"#1a1209",display:"flex",flexDirection:"column",alignItems:"center",padding:"18px 0",flexShrink:0}},
+        h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:8,fontWeight:700,color:"#f7f4ef",letterSpacing:"0.08em",writingMode:"vertical-rl",transform:"rotate(180deg)",paddingBottom:18,borderBottom:"1px solid #2e2418",width:"100%",textAlign:"center",marginBottom:14}},"PACKTRACK"),
+        h("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:1}},
+          ...[
+            {id:"home",icon:"◈",label:"Home"},
+            {id:"inventory",icon:"⊞",label:"Inv."},
+            {id:"entries",icon:"▦",label:"Entry"},
+            {id:"log",icon:"↕",label:"Log"},
+            {id:"reports",icon:"≡",label:"Rep."},
+            {id:"masters",icon:"⬡",label:"Mstr."},
+          ].map(({id,icon,label})=>h("div",{key:id,style:{width:52,height:50,borderRadius:12,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,cursor:"pointer",fontSize:7.5,fontWeight:700,letterSpacing:"0.03em",textTransform:"uppercase",background:view===id?"#f7f4ef":"transparent",color:view===id?"#1a1209":"#4a3728"},
+            onClick:()=>{setView(id);setReportView(null);setMasterView(false);}},
+            h("span",{style:{fontSize:15,lineHeight:1}},icon),label
+          ))
+        ),
+        h("div",{style:{width:7,height:7,background:"#16a34a",borderRadius:"50%"}})
+      ),
+
+      // Main content area
+      h("div",{style:{flex:1,background:"#f7f4ef",display:"flex",flexDirection:"column",overflow:"hidden"}},
+
+        // Top bar
+        h("div",{style:{background:"#fffdf9",borderBottom:"1px solid #e8e2d9",padding:"10px 22px",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}},
+          h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:11,fontWeight:700,letterSpacing:"0.06em"}},
+            view==="home"?new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"}).toUpperCase():
+            view==="inventory"?"INVENTORY OVERVIEW":
+            view==="entries"?`ENTRIES — ${activeLoc?.name||""}`:
+            view==="log"?"TRANSACTION LOG":
+            view==="reports"?(reportView?"← REPORTS":  "REPORTS"):
+            "MASTERS"
+          ),
+          h("div",{style:{display:"flex",alignItems:"center",gap:8,fontSize:10,color:"#9e9080"}},
+            h("span",{style:{width:7,height:7,background:"#16a34a",borderRadius:"50%",display:"inline-block"}}),
+            "Narayandas Sweets & Bites · Since 1877"
+          )
+        ),
+
+        // Entries: location tabs below topbar
+        view==="entries"&&h("div",{style:{background:"#fffdf9",borderBottom:"1px solid #e8e2d9",padding:"8px 16px",display:"flex",gap:6,overflowX:"auto",flexShrink:0,alignItems:"center"}},
+          ...locations.map(l=>h("div",{key:l.id,style:{padding:"6px 12px",borderRadius:20,fontSize:11,fontWeight:600,cursor:"pointer",border:"1.5px solid transparent",whiteSpace:"nowrap",background:activeLocId===l.id?l.color:"#f2ede4",color:activeLocId===l.id?"#fff":"#666",borderColor:activeLocId===l.id?l.color:"#e0d9ce"},
+            onClick:()=>{setActiveLocId(l.id);setSearch("");setExpandedItemId(null);}},
+            `${locIcon(l)} ${l.shortName}`
+          )),
+          h("div",{style:{marginLeft:"auto",display:"flex",gap:6}},
+            activeLoc?.type==="godown"&&h("button",{className:"btn",style:{fontSize:10,padding:"5px 11px",background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0"},onClick:()=>{setPurchaseMode(true);setPurchaseCounts({});}},  "📦 Purchase"),
+            h("button",{className:"btn",style:{fontSize:10,padding:"5px 11px",background:activeLoc?.type==="godown"?"#f2ede4":"#fef3c7",color:activeLoc?.type==="godown"?"#555":"#92400e",border:"1px solid #e0d9ce"},onClick:()=>{setEodMode(true);setEodCounts({});}},
+              activeLoc?.type==="godown"?"📋 Stock Check":"🌙 End of Day"
+            )
+          )
+        ),
+
+        // Content — split layout for entries and log, full for others
+        h("div",{style:{flex:1,overflow:"hidden",display:"flex"}},
+
+          // Filter panel — for log and reports
+          (view==="log"||view==="reports"&&reportView)&&h("div",{style:{width:220,background:"#fffdf9",borderRight:"1px solid #e8e2d9",padding:16,overflowY:"auto",flexShrink:0}},
+            h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:9,color:"#b0a898",letterSpacing:"0.08em",marginBottom:12}},"FILTERS"),
+            h("div",{style:{marginBottom:11}},
+              h("div",{style:{fontSize:10,fontWeight:700,color:"#1a1209",marginBottom:5}},"Quick Date"),
+              h("select",{style:{width:"100%",padding:"7px 9px",background:"#f7f4ef",border:"1.5px solid #e0d9ce",borderRadius:8,fontFamily:"'Sora',sans-serif",fontSize:10,color:"#1a1209",outline:"none"},
+                value:view==="log"?reportFilter.date:(view==="reports"&&reportView==="movement"?smFilter.date:consFilter.date),
+                onChange:e=>{
+                  const v=e.target.value;
+                  if(view==="log")setReportFilter(f=>({...f,date:v}));
+                  else if(reportView==="movement")setSmFilter(f=>({...f,date:v}));
+                  else setConsFilter(f=>({...f,date:v}));
+                }},
+                h("option",{value:"today"},"Today"),
+                h("option",{value:"week"},"This Week"),
+                h("option",{value:"month"},"This Month"),
+                h("option",{value:"lastmonth"},"Last Month"),
+                h("option",{value:"all"},"All Time"),
+                h("option",{value:"custom"},"Custom Range")
+              )
+            ),
+            view==="log"&&h("div",{style:{marginBottom:11}},
+              h("div",{style:{fontSize:10,fontWeight:700,color:"#1a1209",marginBottom:5}},"Transaction Type"),
+              h("select",{style:{width:"100%",padding:"7px 9px",background:"#f7f4ef",border:"1.5px solid #e0d9ce",borderRadius:8,fontFamily:"'Sora',sans-serif",fontSize:10,color:"#1a1209",outline:"none"},
+                value:reportFilter.type,onChange:e=>setReportFilter(f=>({...f,type:e.target.value}))},
+                h("option",{value:"all"},"All Types"),
+                h("option",{value:"dispatch"},"Dispatch"),
+                h("option",{value:"receive"},"Receive"),
+                h("option",{value:"purchase"},"Purchase"),
+                h("option",{value:"adjustment"},"Adjustment"),
+                h("option",{value:"consumption"},"Consumption")
+              )
+            ),
+            h("div",{style:{marginBottom:11}},
+              h("div",{style:{fontSize:10,fontWeight:700,color:"#1a1209",marginBottom:5}},"Location"),
+              h("select",{style:{width:"100%",padding:"7px 9px",background:"#f7f4ef",border:"1.5px solid #e0d9ce",borderRadius:8,fontFamily:"'Sora',sans-serif",fontSize:10,color:"#1a1209",outline:"none"},
+                value:view==="log"?reportFilter.loc:(reportView==="movement"?smFilter.loc:consFilter.loc),
+                onChange:e=>{
+                  const v=e.target.value;
+                  if(view==="log")setReportFilter(f=>({...f,loc:v}));
+                  else if(reportView==="movement")setSmFilter(f=>({...f,loc:v}));
+                  else setConsFilter(f=>({...f,loc:v}));
+                }},
+                h("option",{value:"all"},"All Locations"),
+                ...locations.map(l=>h("option",{key:l.id,value:l.id},l.name))
+              )
+            ),
+            h("div",{style:{marginBottom:14}},
+              h("div",{style:{fontSize:10,fontWeight:700,color:"#1a1209",marginBottom:5}},"Item Name"),
+              h("input",{style:{width:"100%",padding:"7px 9px",background:"#f7f4ef",border:"1.5px solid #e0d9ce",borderRadius:8,fontFamily:"'Sora',sans-serif",fontSize:10,color:"#1a1209",outline:"none"},
+                placeholder:"Search item...",
+                value:view==="log"?(reportFilter.search||""):(reportFilter.search||""),
+                onChange:e=>setReportFilter(f=>({...f,search:e.target.value}))
+              })
+            ),
+            h("button",{style:{width:"100%",padding:8,background:"#1a1209",color:"#fffdf9",border:"none",borderRadius:8,fontFamily:"'Sora',sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}},"Apply Filters"),
+            h("button",{style:{width:"100%",padding:7,background:"transparent",color:"#9e9080",border:"none",fontFamily:"'Sora',sans-serif",fontSize:10,cursor:"pointer",marginTop:3},
+              onClick:()=>{setReportFilter({date:"today",type:"all",loc:"all",search:"",customFrom:"",customTo:""});setSmFilter({date:"week",loc:"all",customFrom:"",customTo:"",showCustom:false});setConsFilter({date:"week",loc:"all",customFrom:"",customTo:"",showCustom:false});}},
+              "Clear All"
+            )
+          ),
+
+          // Entries: item list left + entry panel right
+          view==="entries"&&activeLoc&&!eodMode&&!purchaseMode&&h("div",{style:{display:"flex",flex:1,overflow:"hidden"}},
+            // Item list
+            h("div",{style:{flex:1,overflowY:"auto",padding:16,borderRight:"1px solid #e8e2d9"}},
+              h("input",{className:"inp",placeholder:"🔍 Search items...",value:search,onChange:e=>setSearch(e.target.value),style:{marginBottom:10,fontSize:12}}),
+              h("div",{style:{display:"flex",gap:5,marginBottom:10}},
+                ...["az","za","high","low"].map(m=>h("button",{key:m,className:"btn",style:{padding:"5px 9px",fontSize:9,fontWeight:700,background:sortMode===m?"#1a1209":"#f2ede4",color:sortMode===m?"#fffdf9":"#666",border:"none"},onClick:()=>setSortMode(m)},
+                  m==="az"?"A→Z":m==="za"?"Z→A":m==="high"?"↑ High":"↓ Low"
+                ))
+              ),
+              h("div",{className:"card",style:{overflow:"hidden"}},
+                ...filteredItems.map((item,i)=>{
+                  const s=stockStatus(item);
+                  const isExp=expandedItemId===item.id;
+                  return h("div",{key:item.id,className:"item-card",style:{margin:0,borderRadius:0,borderBottom:i<filteredItems.length-1?"1px solid #f0ebe0":"none",borderLeft:`4px solid ${s.color}`}},
+                    h("div",{className:"item-header",onClick:()=>setExpandedItemId(isExp?null:item.id)},
+                      h("div",{style:{flex:1,minWidth:0}},
+                        h("div",{style:{fontSize:12,fontWeight:700}},item.name),
+                        h("div",{style:{fontSize:10,color:"#9e9080",marginTop:2}},`${fmt(item.baseBal)} ${item.baseUnit}${item.conversion!==1?` · ${fmt(item.baseBal*item.conversion)} ${item.outputUnit}`:""}`)
+                      ),
+                      h("span",{className:"chip",style:{background:s.bg,color:s.color,fontSize:9}},s.label)
+                    )
+                  );
+                })
+              )
+            ),
+            // Entry panel right — shows when item expanded
+            h("div",{style:{width:280,background:"#fffdf9",padding:18,overflowY:"auto",flexShrink:0,borderLeft:"1px solid #e8e2d9"}},
+              expandedItemId&&(()=>{
+                const item=filteredItems.find(i=>i.id===expandedItemId);
+                if(!item)return h("div",{style:{color:"#b0a898",fontSize:12,textAlign:"center",marginTop:40}},"Select an item from the list");
+                const s=stockStatus(item);
+                return h("div",null,
+                  h("div",{style:{fontSize:13,fontWeight:700,marginBottom:3}},item.name),
+                  h("div",{style:{fontSize:10,color:"#9e9080",marginBottom:4}},`${activeLoc.name} · ${fmt(item.baseBal)} ${item.baseUnit}`),
+                  h("span",{className:"chip",style:{background:s.bg,color:s.color,marginBottom:14,display:"inline-flex"}},s.label),
+                  h("div",{style:{display:"flex",gap:4,marginBottom:13}},
+                    ...([["out","📤 Out","tab-out"],["in","📥 In","tab-in"],["adj","⚖️ Adj","tab-adj"]]).map(([v,l,cls])=>
+                      h("button",{key:v,className:`tab-btn ${cls}${entryType===v?" active":""}`,onClick:()=>setEntryType(v)},l)
+                    )
+                  ),
+                  entryType==="out"&&h("div",null,
+                    h("div",{style:{fontSize:9,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:4}},"Send To"),
+                    h("div",{style:{display:"flex",gap:4,marginBottom:10}},
+                      ...(activeLoc.destinations||[]).map(dest=>h("button",{key:dest,className:`loc-btn${entryDest===dest?" active":""}`,onClick:()=>setEntryDest(dest)},dest))
+                    )
+                  ),
+                  entryType!=="adj"&&h("div",null,
+                    h("div",{style:{fontSize:9,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:4}},"Qty In"),
+                    h("div",{style:{display:"flex",gap:4,marginBottom:10}},
+                      h(LocBtns,{options:[["base",item.baseUnit],["output",item.outputUnit]],value:entryUnit,onChange:v=>{setEntryUnit(v);setEntryQty("");}})
+                    )
+                  ),
+                  entryType==="adj"
+                    ?h("div",null,
+                      h("div",{style:{fontSize:9,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:4}},`Physical Count (${item.baseUnit})`),
+                      h("input",{className:"inp",type:"number",min:"0",placeholder:`e.g. ${fmt(item.baseBal)}`,value:adjustQty,onChange:e=>setAdjustQty(e.target.value),style:{textAlign:"center",fontSize:14,fontWeight:700,marginBottom:10}}),
+                      h("button",{className:"btn btn-dark",style:{width:"100%"},onClick:()=>handleAdjust(item,activeLoc)},"✓ Save Adjustment")
+                    )
+                    :h("div",null,
+                      h("div",{style:{fontSize:9,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:4}},`Quantity (${entryUnit==="output"?item.outputUnit:item.baseUnit})`),
+                      h("input",{className:"inp",type:"number",min:"0",placeholder:"0",value:entryQty,onChange:e=>setEntryQty(e.target.value),style:{textAlign:"center",fontSize:16,fontWeight:700,marginBottom:8}}),
+                      h("input",{className:"inp",placeholder:"Note (optional)",value:entryNote,onChange:e=>setEntryNote(e.target.value),style:{fontSize:11,marginBottom:10}}),
+                      h("button",{className:"btn btn-dark",style:{width:"100%"},onClick:()=>handleEntry(item,activeLoc)},entryType==="out"?"Send →":"✓ Got it")
+                    )
+                );
+              })()
+              ||h("div",{style:{color:"#b0a898",fontSize:12,textAlign:"center",marginTop:40,lineHeight:1.6}},
+                "← Tap any item",h("br"),null,"to dispatch, receive",h("br"),null,"or adjust stock"
+              )
+            )
+          ),
+
+          // EOD mode on desktop
+          view==="entries"&&activeLoc&&eodMode&&h("div",{style:{flex:1,overflowY:"auto",padding:16}},
+            h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:12,padding:"11px 14px",background:activeLoc.color+"18",borderRadius:12,border:`1.5px solid ${activeLoc.color}30`}},
+              h("span",{style:{fontSize:20}},activeLoc.type==="godown"?"📋":"🌙"),
+              h("div",{style:{flex:1}},
+                h("div",{style:{fontSize:13,fontWeight:700,color:activeLoc.color}},activeLoc.type==="godown"?"Stock Check":"End of Day Count"),
+                h("div",{style:{fontSize:10,color:"#9e9080"}},"Enter physical count · leave blank to skip")
+              ),
+              h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>{setEodMode(false);setEodCounts({});}},"✕ Cancel")
+            ),
+            h("div",{className:"card",style:{overflow:"hidden",marginBottom:12}},
+              ...(sortedItems(activeLoc)).map((item,i)=>{
+                const val=eodCounts[item.id]??"";
+                const phys=parseFloat(val);
+                const diff=!isNaN(phys)?+(phys-item.baseBal).toFixed(4):null;
+                return h("div",{key:item.id,style:{padding:"11px 14px",borderBottom:i<(activeLoc.items||[]).length-1?"1px solid #f5f0e8":"none",display:"flex",gap:10,alignItems:"center"}},
+                  h("div",{style:{flex:1,minWidth:0}},
+                    h("div",{style:{fontSize:12,fontWeight:600}},item.name),
+                    h("div",{style:{fontSize:10,color:"#9e9080",marginTop:1}},`Current: ${fmt(item.baseBal)} ${item.baseUnit}`),
+                    diff!==null&&diff!==0&&h("div",{style:{fontSize:10,fontWeight:700,color:diff>0?"#16a34a":"#ef4444",marginTop:1}},`${diff>0?"▲ +":"▼ "}${fmt(diff)} ${item.baseUnit}`)
+                  ),
+                  h("input",{type:"number",min:"0",placeholder:"—",value:val,onChange:e=>setEodCounts(c=>({...c,[item.id]:e.target.value})),style:{width:80,padding:"7px 9px",background:val?"#f0fdf4":"#f7f4ef",border:`1.5px solid ${val?"#bbf7d0":"#e0d9ce"}`,borderRadius:8,fontFamily:"'Space Mono',monospace",fontSize:13,fontWeight:700,textAlign:"center",outline:"none",color:"#1a1209"}})
+                );
+              })
+            ),
+            h("button",{className:"btn btn-dark",style:{width:"100%",padding:13,fontSize:13},onClick:handleEODSubmit},activeLoc.type==="godown"?"✓ Submit Stock Check":"✓ Submit End of Day")
+          ),
+
+          // Purchase mode on desktop
+          view==="entries"&&activeLoc&&purchaseMode&&h("div",{style:{flex:1,overflowY:"auto",padding:16}},
+            h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:12,padding:"11px 14px",background:"#f0fdf4",borderRadius:12,border:"1.5px solid #bbf7d0"}},
+              h("span",{style:{fontSize:20}},"📦"),
+              h("div",{style:{flex:1}},
+                h("div",{style:{fontSize:13,fontWeight:700,color:"#16a34a"}},"Purchase / Stock In"),
+                h("div",{style:{fontSize:10,color:"#9e9080"}},"Enter quantity purchased · leave blank to skip")
+              ),
+              h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>{setPurchaseMode(false);setPurchaseCounts({});}},"✕ Cancel")
+            ),
+            h("div",{className:"card",style:{overflow:"hidden",marginBottom:12}},
+              ...(sortedItems(activeLoc)).map((item,i)=>{
+                const val=purchaseCounts[item.id]??"";
+                const qty=parseFloat(val);
+                return h("div",{key:item.id,style:{padding:"11px 14px",borderBottom:i<(activeLoc.items||[]).length-1?"1px solid #f5f0e8":"none",display:"flex",gap:10,alignItems:"center"}},
+                  h("div",{style:{flex:1,minWidth:0}},
+                    h("div",{style:{fontSize:12,fontWeight:600}},item.name),
+                    h("div",{style:{fontSize:10,color:"#9e9080",marginTop:1}},`Current: ${fmt(item.baseBal)} ${item.baseUnit}`),
+                    !isNaN(qty)&&qty>0&&h("div",{style:{fontSize:10,fontWeight:700,color:"#16a34a",marginTop:1}},`▲ +${fmt(qty)} → ${fmt(item.baseBal+qty)} ${item.baseUnit}`)
+                  ),
+                  h("input",{type:"number",min:"0",placeholder:"—",value:val,onChange:e=>setPurchaseCounts(c=>({...c,[item.id]:e.target.value})),style:{width:80,padding:"7px 9px",background:val?"#f0fdf4":"#f7f4ef",border:`1.5px solid ${val?"#16a34a":"#e0d9ce"}`,borderRadius:8,fontFamily:"'Space Mono',monospace",fontSize:13,fontWeight:700,textAlign:"center",outline:"none",color:"#1a1209"}})
+                );
+              })
+            ),
+            h("button",{className:"btn btn-dark",style:{width:"100%",padding:13,fontSize:13,background:"#16a34a"},onClick:handlePurchaseSubmit},"📦 Submit Purchase")
+          ),
+
+          // All other views — scrollable content
+          (view!=="entries"||(view==="entries"&&!activeLoc))&&view!=="log"&&!(view==="reports"&&reportView)&&h("div",{style:{flex:1,overflowY:"auto",padding:"18px 22px"}},
+            // HOME
+            view==="home"&&h("div",null,
+              h("div",{style:{marginBottom:16}},
+                h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:13,fontWeight:700,color:"#1a1209",letterSpacing:"0.06em"}},
+                  new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"}).toUpperCase()
+                )
+              ),
+              // Stats
+              h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:16}},
+                ...[
+                  {label:"Dispatch",val:todayTx.filter(t=>t.type==="dispatch").length,color:"#c2410c",key:"dispatch"},
+                  {label:"Receive",val:todayTx.filter(t=>t.type==="receive").length,color:"#15803d",key:"receive"},
+                  {label:"Purchase",val:todayTx.filter(t=>t.type==="purchase").length,color:"#16a34a",key:"purchase"},
+                  {label:"Adjusted",val:todayTx.filter(t=>t.type==="adjustment"||t.type==="consumption").length,color:"#4338ca",key:"adjusted"},
+                ].map(({label,val,color,key})=>h("div",{key:label,className:"card",style:{padding:"12px 10px",textAlign:"center",borderTop:`3px solid ${color}`,cursor:"pointer"},onClick:()=>setDashDetailModal(key)},
+                  h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:22,fontWeight:700,color}},val),
+                  h("div",{style:{fontSize:8,color:"#9e9080",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",marginTop:3}},label)
+                ))
+              ),
+              // Value + Health row
+              h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14}},
+                h("div",{className:"card",style:{padding:14}},
+                  h("div",{style:{fontSize:9,fontWeight:700,color:"#9e9080",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}},"Total Inventory Value"),
+                  h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:22,fontWeight:700,color:"#16a34a"}},fmtRs(totalValue)),
+                  h("div",{style:{fontSize:9,color:"#b0a898",marginTop:3}},`${locations.length} locations · ${locations.reduce((s,l)=>s+(l.items||[]).length,0)} items`)
+                ),
+                (()=>{
+                  const allItems=locations.flatMap(l=>l.items||[]);
+                  const total=allItems.length;
+                  const low=allItems.filter(i=>i.minStock>0&&i.baseBal>0&&i.baseBal<=i.minStock).length;
+                  const nil=allItems.filter(i=>i.baseBal===0).length;
+                  const good=total-low-nil;
+                  const r=54,cx=70,cy=70,circ=2*Math.PI*r;
+                  const gD=circ*(good/Math.max(total,1));const lD=circ*(low/Math.max(total,1));const nD=circ*(nil/Math.max(total,1));
+                  return h("div",{className:"card",style:{padding:14,display:"flex",gap:12,alignItems:"center"}},
+                    h("svg",{width:72,height:72,viewBox:"0 0 140 140",style:{flexShrink:0}},
+                      h("circle",{cx,cy,r,fill:"none",stroke:"#ede8df",strokeWidth:14}),
+                      total>0&&h("circle",{cx,cy,r,fill:"none",stroke:"#16a34a",strokeWidth:14,strokeDasharray:`${gD} ${circ}`,strokeDashoffset:0,transform:"rotate(-90 70 70)"}),
+                      total>0&&low>0&&h("circle",{cx,cy,r,fill:"none",stroke:"#d97706",strokeWidth:14,strokeDasharray:`${lD} ${circ}`,strokeDashoffset:-gD,transform:"rotate(-90 70 70)"}),
+                      total>0&&nil>0&&h("circle",{cx,cy,r,fill:"none",stroke:"#ef4444",strokeWidth:14,strokeDasharray:`${nD} ${circ}`,strokeDashoffset:-(gD+lD),transform:"rotate(-90 70 70)"}),
+                      h("text",{x:cx,y:63,textAnchor:"middle",fontFamily:"Space Mono",fontSize:24,fontWeight:700,fill:"#1a1209"},total),
+                      h("text",{x:cx,y:82,textAnchor:"middle",fontFamily:"Sora",fontSize:9,fill:"#9e9080"},"items")
+                    ),
+                    h("div",{style:{flex:1}},
+                      h("div",{style:{fontSize:9,fontWeight:700,color:"#b0a898",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:7}},"Stock Health"),
+                      h("div",{style:{fontSize:10,display:"flex",justifyContent:"space-between",marginBottom:4}},h("span",{style:{color:"#16a34a",fontWeight:600}},"✓ Good"),h("span",{style:{fontFamily:"'Space Mono',monospace",fontSize:9}},good)),
+                      h("div",{style:{fontSize:10,display:"flex",justifyContent:"space-between",marginBottom:4}},h("span",{style:{color:"#d97706",fontWeight:600}},"⚠ Low"),h("span",{style:{fontFamily:"'Space Mono',monospace",fontSize:9}},low)),
+                      h("div",{style:{fontSize:10,display:"flex",justifyContent:"space-between"}},h("span",{style:{color:"#ef4444",fontWeight:600}},"✕ Nil"),h("span",{style:{fontFamily:"'Space Mono',monospace",fontSize:9}},nil))
+                    )
+                  );
+                })(),
+                h("div",{className:"card",style:{padding:14}},
+                  h("div",{style:{fontSize:9,fontWeight:700,color:"#b0a898",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:7}},"Month Over Month"),
+                  h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:22,fontWeight:700,color:"#16a34a"}},thisMoTx),
+                  h("div",{style:{fontSize:9,color:"#b0a898",marginTop:3}},"dispatches this month"),
+                  h("div",{style:{fontSize:9,color:"#9e9080",marginTop:6}},`Last month: ${lastMoTx}`)
+                )
+              ),
+              // Most dispatched
+              h("div",{className:"card",style:{padding:14,marginBottom:14}},
+                h("div",{style:{fontSize:9,fontWeight:700,color:"#9e9080",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}},"🔥 Most Dispatched — This Week"),
+                mostUsed.length===0?h("div",{style:{fontSize:11,color:"#c4b8aa"}},"No dispatches this week"):
+                h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 24px"}},
+                  ...mostUsed.slice(0,5).map((s,i)=>h("div",{key:i,style:{marginBottom:8}},
+                    h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:2}},
+                      h("span",{style:{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"70%",fontWeight:600}},s.name),
+                      h("span",{style:{color:"#16a34a",fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:10}},fmt(s.dispatched))
+                    ),
+                    h("div",{style:{height:4,background:"#ede8df",borderRadius:2}},
+                      h("div",{style:{height:"100%",width:`${(s.dispatched/mostUsed[0].dispatched)*100}%`,background:"#16a34a",borderRadius:2}})
+                    )
+                  ))
+                )
+              ),
+              // Dispatch by destination
+              h("div",{className:"card",style:{padding:14,marginBottom:14}},
+                h("div",{style:{fontSize:9,fontWeight:700,color:"#9e9080",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}},"📊 Dispatch by Destination"),
+                h("div",{style:{display:"grid",gridTemplateColumns:`repeat(${locations.filter(l=>l.type!=="godown").length},1fr)`,gap:12}},
+                  ...locations.filter(l=>l.type!=="godown").map(dest=>{
+                    const count=transactions.filter(t=>t.type==="dispatch"&&(t.dest===dest.name||t.destLocId===dest.id)).length;
+                    const total=transactions.filter(t=>t.type==="dispatch").length;
+                    const pct=total>0?Math.round((count/total)*100):0;
+                    return h("div",{key:dest.id},
+                      h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:4}},
+                        h("div",{style:{display:"flex",alignItems:"center",gap:4}},h("span",{style:{fontSize:13}},locIcon(dest)),h("span",{style:{fontWeight:600}},dest.name)),
+                        h("span",{style:{color:"#9e9080",fontFamily:"'Space Mono',monospace",fontSize:10}},`${count} · ${pct}%`)
+                      ),
+                      h("div",{style:{height:7,background:"#ede8df",borderRadius:4}},
+                        h("div",{style:{height:"100%",width:`${pct}%`,background:dest.color,borderRadius:4}})
+                      )
+                    );
+                  })
+                )
+              ),
+              // Location Summary
+              h("div",{className:"card",style:{overflow:"hidden"}},
+                h("div",{style:{padding:"11px 16px",borderBottom:"1px solid #f0ebe0",display:"flex",justifyContent:"space-between",alignItems:"center"}},
+                  h("div",{style:{fontSize:9,fontWeight:700,color:"#9e9080",textTransform:"uppercase",letterSpacing:"0.06em"}},"Location-wise Stock Summary"),
+                  h("input",{className:"inp",placeholder:"🔍 Search item...",value:reportFilter.search||"",onChange:e=>setReportFilter(f=>({...f,search:e.target.value})),style:{width:180,fontSize:11,padding:"5px 10px"}})
+                ),
+                h("div",{style:{overflowX:"auto"}},
+                  h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:11}},
+                    h("thead",null,h("tr",{style:{background:"#f7f4ef"}},
+                      h("th",{style:{padding:"8px 12px",textAlign:"left",fontWeight:700,fontSize:9,letterSpacing:"0.06em",textTransform:"uppercase",color:"#9e9080",position:"sticky",left:0,background:"#f7f4ef",minWidth:140}},"Item"),
+                      ...locations.map(l=>h("th",{key:l.id,style:{padding:"8px 8px",textAlign:"center",fontWeight:700,fontSize:9,color:l.color,whiteSpace:"nowrap"}},`${locIcon(l)} ${l.shortName}`))
+                    )),
+                    h("tbody",null,
+                      ...allItemNames.filter(n=>!reportFilter.search||n.toLowerCase().includes((reportFilter.search||"").toLowerCase())).map((name,ri)=>
+                        h("tr",{key:name,style:{borderTop:"1px solid #f0ebe0",background:ri%2===0?"#fffdf9":"#faf7f1"}},
+                          h("td",{style:{padding:"8px 12px",fontWeight:600,position:"sticky",left:0,background:ri%2===0?"#fffdf9":"#faf7f1"}},name),
+                          ...locations.map(l=>{
+                            const item=(l.items||[]).find(i=>i.name===name);
+                            const s=item?stockStatus(item):null;
+                            return h("td",{key:l.id,style:{padding:"8px 8px",textAlign:"center",color:s?s.color:"#e0d9ce",fontFamily:"'Space Mono',monospace",fontSize:11,fontWeight:700}},item?fmt(item.baseBal):"—");
+                          })
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          ),
+
+          // LOG on desktop — content area (filters are in left panel above)
+          view==="log"&&(()=>{
+            const desktopLogFiltered=transactions.filter(t=>{
+              if(reportFilter.type!=="all"&&t.type!==reportFilter.type)return false;
+              if(reportFilter.loc!=="all"&&t.locId!==reportFilter.loc&&t.srcLocId!==reportFilter.loc&&t.destLocId!==reportFilter.loc)return false;
+              if(reportFilter.search&&!t.itemName?.toLowerCase().includes(reportFilter.search.toLowerCase()))return false;
+              const range=getDateRange(reportFilter);return txInRange(t,range);
+            });
+            return h("div",{style:{flex:1,overflowY:"auto",padding:"18px 22px"}},
+            h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:9,color:"#b0a898",letterSpacing:"0.08em",marginBottom:10}},`${desktopLogFiltered.length} TRANSACTIONS`),
+            h("div",{className:"card",style:{overflow:"hidden"}},
+              h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:11}},
+                h("thead",null,h("tr",{style:{background:"#f7f4ef"}},
+                  h("th",{style:{padding:"8px 12px",textAlign:"left",fontWeight:700,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em",color:"#9e9080"}},"Type"),
+                  h("th",{style:{padding:"8px 12px",textAlign:"left",fontWeight:700,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em",color:"#9e9080"}},"Item"),
+                  h("th",{style:{padding:"8px 12px",textAlign:"left",fontWeight:700,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em",color:"#9e9080"}},"Location"),
+                  h("th",{style:{padding:"8px 12px",textAlign:"left",fontWeight:700,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em",color:"#9e9080"}},"Qty"),
+                  h("th",{style:{padding:"8px 12px",textAlign:"left",fontWeight:700,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em",color:"#9e9080"}},"Date"),
+                  h("th",null)
+                )),
+                h("tbody",null,
+                  ...desktopLogFiltered.map((tx,i)=>h("tr",{key:tx.id||i,style:{borderTop:"1px solid #f0ebe0"}},
+                    h("td",{style:{padding:"8px 12px"}},h("span",{className:"chip",style:{background:txColor(tx.type),color:txTextColor(tx.type)}},txTypeLabel(tx.type))),
+                    h("td",{style:{padding:"8px 12px",fontWeight:600,fontSize:11}},tx.itemName),
+                    h("td",{style:{padding:"8px 12px",color:"#9e9080",fontSize:10}},
+                      tx.type==="dispatch"?`${tx.locName} → ${tx.dest}`:
+                      tx.type==="purchase"?`${tx.locName} · Purchased`:
+                      tx.type==="consumption"?`${tx.locName} · Consumed`:
+                      tx.type==="adjustment"?`${tx.locName} · Adjustment`:
+                      `${tx.srcLocName||"External"} → ${tx.locName}`
+                    ),
+                    h("td",{style:{padding:"8px 12px",fontFamily:"'Space Mono',monospace",fontSize:10}},tx.qtyDisplay),
+                    h("td",{style:{padding:"8px 12px",color:"#b0a898",fontSize:10}},tx.date),
+                    h("td",{style:{padding:"8px 12px",position:"relative"}},
+                      h("button",{style:{padding:"2px 8px",background:"#fef2f2",color:"#b91c1c",border:"1px solid #fecaca",borderRadius:5,fontSize:9,cursor:"pointer"},onClick:()=>setDeleteConfirm(deleteConfirm===tx.id?null:tx.id)},"🗑"),
+                      deleteConfirm===tx.id&&h("div",{style:{position:"absolute",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:8,padding:"8px 12px",zIndex:100,display:"flex",gap:6,right:0,top:32}},
+                        h("button",{className:"btn btn-ghost",style:{fontSize:10,padding:"4px 8px"},onClick:()=>setDeleteConfirm(null)},"Cancel"),
+                        h("button",{className:"btn",style:{background:"#b91c1c",color:"#fff",fontSize:10,padding:"4px 10px"},onClick:()=>handleDeleteTx(tx)},"Delete & Reverse")
+                      )
+                    )
+                  ))
+                )
+              )
+            )
+          );
+          })(),
+
+    // ── MOBILE LAYOUT ──
+    :h("div",{style:{minHeight:"100vh",background:"#f7f4ef"}},
+
+      // Mobile header
+      h("div",{style:{background:"#fffdf9",borderBottom:"1px solid #e8e2d9",padding:"10px 18px",position:"sticky",top:0,zIndex:50}},
+        h("div",{style:{maxWidth:600,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"space-between"}},
+          h("div",null,
+            h("div",{style:{fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:13,letterSpacing:"0.06em"}},"PACKTRACK INVENTORY"),
+            h("div",{style:{fontSize:9,color:"#b0a898",fontWeight:500,letterSpacing:"0.05em",marginTop:1}},"Narayandas Sweets & Bites · Since 1877 · 🟢")
+          )
+        )
+      ),
+
+      h("div",{style:{maxWidth:600,margin:"0 auto",padding:"16px 14px 140px"}},
+
+      // ── HOME DASHBOARD ──
+      view==="home"&&h("div",null,
+        // Date only — no shop name
+        h("div",{style:{marginBottom:18}},
+          h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:13,fontWeight:700,color:"#1a1209",letterSpacing:"0.06em"}},
+            new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"}).toUpperCase()
+          )
+        ),
+
+        // Today's activity strip
+        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}},
+          ...[
+            {label:"Dispatch",val:todayTx.filter(t=>t.type==="dispatch").length,color:"#c2410c",key:"dispatch"},
+            {label:"Receive",val:todayTx.filter(t=>t.type==="receive").length,color:"#15803d",key:"receive"},
+            {label:"Purchase",val:todayTx.filter(t=>t.type==="purchase").length,color:"#16a34a",key:"purchase"},
+            {label:"Adjusted",val:todayTx.filter(t=>t.type==="adjustment"||t.type==="consumption").length,color:"#4338ca",key:"adjusted"},
+          ].map(({label,val,color,key})=>h("div",{key:label,className:"card",style:{padding:"10px 8px",textAlign:"center",borderTop:`3px solid ${color}`,cursor:"pointer"},
+            onClick:()=>setDashDetailModal(key)},
+            h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:20,fontWeight:700,color}},val),
+            h("div",{style:{fontSize:8,color:"#9e9080",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",marginTop:2}},label)
+          ))
+        ),
+
+        // Total value — small single card
+        h("div",{className:"card",style:{padding:16,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}},
+          h("div",null,
+            h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:4}},"Total Inventory Value"),
+            h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:24,fontWeight:700,color:"#16a34a"}},fmtRs(totalValue)),
+            h("div",{style:{fontSize:10,color:"#b0a898",marginTop:3}},`${locations.length} locations · ${locations.reduce((s,l)=>s+(l.items||[]).length,0)} items`)
+          ),
+          momChange!==null?h("span",{className:"chip",style:{background:momChange>=0?"#f0fdf4":"#fef2f2",color:momChange>=0?"#15803d":"#b91c1c"}},`${momChange>=0?"↑":"↓"} ${Math.abs(momChange)}% vs last month`):null
+        ),
+
+        // Stock health ring
+        (()=>{
+          const allItems=locations.flatMap(l=>l.items||[]);
+          const total=allItems.length;
+          const low=allItems.filter(i=>i.minStock>0&&i.baseBal>0&&i.baseBal<=i.minStock).length;
+          const nil=allItems.filter(i=>i.baseBal===0).length;
+          const good=total-low-nil;
+          const goodPct=total>0?Math.round((good/total)*100):0;
+          const lowPct=total>0?Math.round((low/total)*100):0;
+          const nilPct=total>0?Math.round((nil/total)*100):0;
+          const r=54,cx=70,cy=70,circ=2*Math.PI*r;
+          const goodDash=circ*(good/Math.max(total,1));const lowDash=circ*(low/Math.max(total,1));const nilDash=circ*(nil/Math.max(total,1));
+          return h("div",{className:"card",style:{padding:16,marginBottom:14,display:"flex",gap:16,alignItems:"center"}},
+            h("svg",{width:140,height:140,viewBox:"0 0 140 140",style:{flexShrink:0}},
+              h("circle",{cx,cy,r,fill:"none",stroke:"#ede8df",strokeWidth:14}),
+              total>0&&h("circle",{cx,cy,r,fill:"none",stroke:"#16a34a",strokeWidth:14,strokeDasharray:`${goodDash} ${circ}`,strokeDashoffset:0,strokeLinecap:"round",style:{transition:"all .5s",transform:"rotate(-90deg)",transformOrigin:"70px 70px"}}),
+              total>0&&low>0&&h("circle",{cx,cy,r,fill:"none",stroke:"#d97706",strokeWidth:14,strokeDasharray:`${lowDash} ${circ}`,strokeDashoffset:-goodDash,strokeLinecap:"round",style:{transition:"all .5s",transform:"rotate(-90deg)",transformOrigin:"70px 70px"}}),
+              total>0&&nil>0&&h("circle",{cx,cy,r,fill:"none",stroke:"#ef4444",strokeWidth:14,strokeDasharray:`${nilDash} ${circ}`,strokeDashoffset:-(goodDash+lowDash),strokeLinecap:"round",style:{transition:"all .5s",transform:"rotate(-90deg)",transformOrigin:"70px 70px"}}),
+              h("text",{x:cx,y:cy-8,textAnchor:"middle",fontFamily:"'Space Mono',monospace",fontSize:24,fontWeight:700,fill:"#1a1209"},total),
+              h("text",{x:cx,y:cy+12,textAnchor:"middle",fontFamily:"'Sora',sans-serif",fontSize:9,fill:"#9e9080",fontWeight:600},"ITEMS")
+            ),
+            h("div",{style:{flex:1}},
+              h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:9,color:"#b0a898",letterSpacing:"0.07em",marginBottom:10}},"STOCK HEALTH"),
+              h("div",{style:{marginBottom:8}},
+                h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:3}},h("span",{style:{color:"#16a34a",fontWeight:600}},"✓ In Stock"),h("span",{style:{fontFamily:"'Space Mono',monospace",fontWeight:700}},`${good} · ${goodPct}%`)),
+                h("div",{style:{height:5,background:"#ede8df",borderRadius:3}},h("div",{style:{height:"100%",width:`${goodPct}%`,background:"#16a34a",borderRadius:3}}))
+              ),
+              h("div",{style:{marginBottom:8}},
+                h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:3}},h("span",{style:{color:"#d97706",fontWeight:600}},"⚠ Low Stock"),h("span",{style:{fontFamily:"'Space Mono',monospace",fontWeight:700}},`${low} · ${lowPct}%`)),
+                h("div",{style:{height:5,background:"#ede8df",borderRadius:3}},h("div",{style:{height:"100%",width:`${lowPct}%`,background:"#d97706",borderRadius:3}}))
+              ),
+              h("div",null,
+                h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:3}},h("span",{style:{color:"#ef4444",fontWeight:600}},"✕ Nil"),h("span",{style:{fontFamily:"'Space Mono',monospace",fontWeight:700}},`${nil} · ${nilPct}%`)),
+                h("div",{style:{height:5,background:"#ede8df",borderRadius:3}},h("div",{style:{height:"100%",width:`${nilPct}%`,background:"#ef4444",borderRadius:3}}))
+              )
+            )
+          );
+        })(),
+
+        // Most Dispatched — This Week
+        h("div",{className:"card",style:{padding:14,marginBottom:14}},
+          h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}},"🔥 Most Dispatched — This Week"),
+          mostUsed.length===0?h("div",{style:{fontSize:11,color:"#c4b8aa"}},"No dispatches this week yet"):
+          mostUsed.slice(0,5).map((s,i)=>h("div",{key:i,style:{marginBottom:7}},
+            h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:2}},
+              h("span",{style:{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"70%",fontWeight:600}},s.name),
+              h("span",{style:{color:"#16a34a",fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:10,flexShrink:0}},fmt(s.dispatched))
+            ),
+            h("div",{style:{height:4,background:"#ede8df",borderRadius:2}},
+              h("div",{style:{height:"100%",width:`${(s.dispatched/mostUsed[0].dispatched)*100}%`,background:"#16a34a",borderRadius:2}})
+            )
+          ))
+        ),
+
+        // Month over month
+        h("div",{className:"card",style:{padding:14,marginBottom:14}},
+          h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}},"📈 Month Over Month"),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+            h("div",null,
+              h("div",{style:{fontSize:13,fontWeight:600}},`This month: ${thisMoTx} dispatches`),
+              h("div",{style:{fontSize:11,color:"#9e9080",marginTop:2}},`Last month: ${lastMoTx} dispatches`)
+            ),
+            momChange!==null
+              ?h("div",{style:{fontFamily:"'Space Mono'",fontSize:26,fontWeight:700,color:momChange>=0?"#16a34a":"#ef4444"}},`${momChange>=0?"+":""}${momChange}%`)
+              :h("div",{style:{fontSize:11,color:"#9e9080"}},"Not enough data")
+          )
+        ),
+
+        // Dispatch by destination
+        h("div",{className:"card",style:{padding:14}},
+          h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12}},"📊 Dispatch by Destination"),
+          ...locations.filter(l=>l.type!=="godown").map(dest=>{
+            const count=transactions.filter(t=>t.type==="dispatch"&&(t.dest===dest.name||t.destLocId===dest.id)).length;
+            const total=transactions.filter(t=>t.type==="dispatch").length;
+            const pct=total>0?Math.round((count/total)*100):0;
+            return h("div",{key:dest.id,style:{marginBottom:12}},
+              h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}},
+                h("div",{style:{display:"flex",alignItems:"center",gap:5}},h("span",{style:{fontSize:14}},locIcon(dest)),h("span",{style:{fontWeight:600}},dest.name)),
+                h("span",{style:{color:"#9e9080",fontFamily:"'Space Mono'",fontSize:11}},`${count} · ${pct}%`)
+              ),
+              h("div",{style:{height:7,background:"#f0ebe0",borderRadius:4}},
+                h("div",{style:{height:"100%",width:`${pct}%`,background:dest.color,borderRadius:4}})
+              )
+            );
+          })
+        ),
+
+        // Location-wise Stock Summary
+        h("div",{className:"card",style:{overflow:"hidden",marginTop:14}},
+          h("div",{style:{padding:"12px 16px",borderBottom:"1px solid #f0ebe0",display:"flex",justifyContent:"space-between",alignItems:"center"}},
+            h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",textTransform:"uppercase",letterSpacing:"0.06em"}},"📊 Location-wise Stock Summary"),
+            h("input",{className:"inp",placeholder:"🔍 Search item...",value:reportFilter.search||"",onChange:e=>setReportFilter(f=>({...f,search:e.target.value})),style:{width:160,fontSize:11,padding:"5px 10px"}})
+          ),
+          h("div",{style:{overflowX:"auto"}},
+            h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:11,background:"#fffdf9"}},
+              h("thead",null,h("tr",{style:{background:"#f7f4ef"}},
+                h("th",{style:{padding:"8px 12px",textAlign:"left",fontWeight:700,fontSize:9,letterSpacing:"0.06em",textTransform:"uppercase",color:"#9e9080",position:"sticky",left:0,background:"#f7f4ef",minWidth:130}},"Item"),
+                ...locations.map(l=>h("th",{key:l.id,style:{padding:"8px 8px",textAlign:"center",fontWeight:700,fontSize:9,color:l.color,whiteSpace:"nowrap"}},`${locIcon(l)} ${l.shortName}`))
+              )),
+              h("tbody",null,
+                ...allItemNames.filter(n=>!reportFilter.search||n.toLowerCase().includes((reportFilter.search||"").toLowerCase())).map((name,ri)=>
+                  h("tr",{key:name,style:{borderTop:"1px solid #f0ebe0",background:ri%2===0?"#fffdf9":"#faf7f1"}},
+                    h("td",{style:{padding:"8px 12px",fontWeight:600,fontSize:11,position:"sticky",left:0,background:ri%2===0?"#fffdf9":"#faf7f1"}},name),
+                    ...locations.map(l=>{
+                      const item=(l.items||[]).find(i=>i.name===name);
+                      const s=item?stockStatus(item):null;
+                      return h("td",{key:l.id,style:{padding:"8px 8px",textAlign:"center",color:s?s.color:"#e0d9ce",fontFamily:"'Space Mono',monospace",fontSize:11,fontWeight:700}},item?fmt(item.baseBal):"—");
+                    })
+                  )
+                )
+              )
+            )
+          )
+        )
+      ),
+
+      // ── INVENTORY ──
+      view==="inventory"&&h("div",null,
+        // Total value card
+        h("div",{className:"card",style:{padding:16,marginBottom:14}},
+          h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:4}},"Total Inventory Value"),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}},
+            h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:26,fontWeight:700,color:"#16a34a"}},fmtRs(totalValue)),
+            momChange!==null?h("span",{className:"chip",style:{background:momChange>=0?"#f0fdf4":"#fef2f2",color:momChange>=0?"#15803d":"#b91c1c"}},`${momChange>=0?"↑":"↓"} ${Math.abs(momChange)}% vs last month`):null
+          ),
+          h("div",{style:{fontSize:10,color:"#b0a898"}},`${locations.length} locations · ${locations.reduce((s,l)=>s+(l.items||[]).length,0)} items`)
+        ),
+
+        // Per-location rows with colored bars
+        h("div",{className:"card",style:{marginBottom:14,overflow:"hidden"}},
+          ...locations.map((l,gi)=>{
+            const lVal=locValue(l);const pct=totalValue>0?(lVal/totalValue)*100:0;
+            const low=(l.items||[]).filter(i=>i.minStock>0&&i.baseBal<=i.minStock).length;
+            return h("div",{key:l.id,style:{padding:"12px 16px",borderBottom:gi<locations.length-1?"1px solid #f5f0e8":"none",cursor:"pointer"},
+              onClick:()=>setValLocId(l.id)},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}},
+                h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+                  h("span",{style:{fontSize:18}},locIcon(l)),
+                  h("div",null,
+                    h("div",{style:{fontSize:13,fontWeight:700}},l.name),
+                    h("div",{style:{fontSize:10,color:"#9e9080",marginTop:1}},
+                      `${(l.items||[]).length} items · ${Math.round(pct)}%`+
+                      (low>0?` · ⚠ ${low} low`:"")
+                    )
+                  )
+                ),
+                h("div",{style:{textAlign:"right"}},
+                  h("div",{style:{fontFamily:"'Space Mono',monospace",fontSize:14,fontWeight:700,color:l.color}},fmtRs(lVal)),
+                  h("div",{style:{fontSize:9,color:"#b0a898",marginTop:2}},"tap to view →")
+                )
+              ),
+              h("div",{style:{height:5,background:"#ede8df",borderRadius:3}},
+                h("div",{style:{height:"100%",width:`${pct}%`,background:l.color,borderRadius:3}})
+              )
+            );
+          })
+        ),
+
+        // Today's activity — all locations
+        h("div",{className:"card",style:{overflow:"hidden"}},
+          h("div",{style:{padding:"11px 15px",borderBottom:"1px solid #f0ebe0",display:"flex",justifyContent:"space-between",alignItems:"center"}},
+            h("span",{style:{fontSize:13,fontWeight:700}},"Today's Activity"),
+            h("span",{style:{fontSize:10,color:"#b0a898"}},`${todayTx.length} entries`)
+          ),
+          todayTx.length===0
+            ?h("div",{style:{padding:28,textAlign:"center",color:"#c4b8aa",fontSize:12}},"No entries yet today")
+            :todayTx.slice(0,8).map(tx=>h("div",{key:tx.id,style:{padding:"10px 15px",borderBottom:"1px solid #f5f0e8",display:"flex",gap:10,alignItems:"center"}},
+              h("div",{style:{width:30,height:30,borderRadius:8,background:txColor(tx.type),display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}},txIcon(tx.type)),
+              h("div",{style:{flex:1,minWidth:0}},
+                h("div",{style:{fontSize:12,fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},tx.itemName),
+                h("div",{style:{fontSize:10,color:"#9e9080",marginTop:1}},
+                  tx.type==="dispatch"?`${tx.locName} → ${tx.dest}`:
+                  tx.type==="purchase"?`${tx.locName} · Purchased`:
+                  tx.type==="consumption"?`${tx.locName} · Consumed`:
+                  `${tx.locName}`
+                )
+              ),
+              h("span",{className:"chip",style:{background:txColor(tx.type),color:txTextColor(tx.type)}},tx.qtyDisplay)
+            ))
+        )
+      ),
+
+      // ── ENTRIES ──
+      view==="entries"&&activeLoc&&!eodMode&&!purchaseMode&&h("div",null,
+        h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:13,padding:"10px 14px",background:activeLoc.color+"18",borderRadius:12,border:`1.5px solid ${activeLoc.color}30`}},
+          h("span",{style:{fontSize:20}},locIcon(activeLoc)),
+          h("div",{style:{flex:1}},
+            h("div",{style:{fontSize:13,fontWeight:700,color:activeLoc.color}},activeLoc.name),
+            h("div",{style:{fontSize:10,color:"#9e9080"}},
+              activeLoc.type==="outlet_ro"?"Receive only":
+              `Dispatches to: ${(activeLoc.destinations||[]).join(", ")||"—"}`
+            )
+          ),
+          h("div",{style:{display:"flex",gap:6}},
+            activeLoc.type==="godown"&&h("button",{className:"btn",style:{fontSize:11,padding:"6px 11px",background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0"},
+              onClick:()=>{setPurchaseMode(true);setPurchaseCounts({});}},
+              "📦 Purchase"
+            ),
+            h("button",{className:"btn",style:{fontSize:11,padding:"6px 11px",background:activeLoc.type==="godown"?"#f0efe9":"#fef3c7",color:activeLoc.type==="godown"?"#555":"#92400e",border:"1px solid #e5e5e0"},
+              onClick:()=>{setEodMode(true);setEodCounts({});}},
+              activeLoc.type==="godown"?"📋 Stock Check":"🌙 End of Day"
+            )
+          )
+        ),
+
+        // Sort buttons
+        h("div",{style:{display:"flex",gap:6,marginBottom:10}},
+          ...["az","za","high","low"].map(m=>h("button",{key:m,className:"btn",style:{flex:1,padding:"7px 4px",fontSize:10,fontWeight:700,background:sortMode===m?"#111":"#f0efe9",color:sortMode===m?"#fff":"#666",border:"none"},onClick:()=>setSortMode(m)},
+            m==="az"?"A→Z":m==="za"?"Z→A":m==="high"?"↑ High":"↓ Low"
+          ))
+        ),
+
+        // Search with clear button
+        h("div",{style:{position:"relative",marginBottom:12}},
+          h("input",{className:"inp",placeholder:"🔍  Search items...",value:search,onChange:e=>setSearch(e.target.value),style:{paddingRight:search?36:14}}),
+          search&&h("button",{style:{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",fontSize:16,color:"#9e9080",cursor:"pointer",padding:4},onClick:()=>setSearch("")},"✕")
+        ),
+
+        filteredItems.length===0&&h("div",{style:{padding:32,textAlign:"center",color:"#c4b8aa",fontSize:13}},(activeLoc.items||[]).length===0?"No items yet.":"No results."),
+
+        ...filteredItems.map((item,idx)=>{
+          const s=stockStatus(item);const isExpanded=expandedItemId===item.id;
+          const canDispatch=activeLoc.type!=="outlet_ro";
+          const dl=daysLeft(item,transactions);
+          const lastUp=item.lastUpdated;
+          const daysAgo=lastUp?Math.round((new Date()-new Date(lastUp))/(1000*60*60*24)):null;
+          return h("div",{key:item.id,style:{background:"#fffdf9",border:"1px solid #e8e2d9",borderRadius:14,marginBottom:10,overflow:"hidden",display:"flex"}},
+            // Color bar
+            h("div",{style:{width:4,background:activeLoc.color,flexShrink:0,borderRadius:"14px 0 0 14px"}}),
+            h("div",{style:{flex:1,minWidth:0}},
+              h("div",{className:"item-header",onClick:()=>{
+                if(expandedItemId===item.id){setExpandedItemId(null);}
+                else{setExpandedItemId(item.id);setEntryType(canDispatch?"out":"in");setEntryDest(activeLoc.destinations?.[0]||"");setEntryQty("");setEntryNote("");setEntryUnit("base");setAdjustQty("");}
+              }},
+                h("div",{style:{flex:1,minWidth:0}},
+                  h("span",{style:{fontSize:13,fontWeight:700}},item.name),
+                  h("div",{style:{display:"flex",alignItems:"baseline",gap:5,flexWrap:"wrap",marginTop:4}},
+                    h("span",{style:{fontFamily:"'Space Mono'",fontSize:20,fontWeight:700,color:s.color}},fmt(item.baseBal)),
+                    h("span",{style:{fontSize:12,color:"#9e9080"}},item.baseUnit),
+                    item.conversion!==1&&h("span",{style:{fontSize:11,color:"#c4b8aa"}},`· ${fmt(item.baseBal*item.conversion)} ${item.outputUnit}`)
+                  ),
+                  h("div",{style:{display:"flex",gap:8,marginTop:3,flexWrap:"wrap"}},
+                    dl!==null&&dl<=14&&h("span",{style:{fontSize:10,color:dl<=3?"#ef4444":dl<=7?"#d97706":"#aaa",fontWeight:600}},
+                      dl===0?"⚡ Today":`⏱ ~${dl}d`
+                    ),
+                    daysAgo!==null&&h("span",{style:{fontSize:10,color:"#c4b8aa"}},
+                      daysAgo===0?"Updated today":daysAgo===1?"Updated yesterday":`Updated ${daysAgo}d ago`
+                    )
+                  )
+                ),
+                h("div",{style:{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5}},
+                  h("span",{className:"chip",style:{background:s.bg,color:s.color,fontSize:9}},s.label),
+                  h("span",{style:{fontSize:9,color:"#c4b8aa",marginTop:2}},isExpanded?"▲":"▼")
+                )
+              ),
+              isExpanded&&h("div",{className:"item-expanded"},
+              h("div",{style:{display:"flex",gap:6,marginBottom:12}},
+                canDispatch&&h("div",{className:`tab-btn tab-out${entryType==="out"?" active":""}`,onClick:()=>setEntryType("out")},"📤 Out"),
+                h("div",{className:`tab-btn tab-in${entryType==="in"?" active":""}`,onClick:()=>setEntryType("in")},"📥 In"),
+                h("div",{className:`tab-btn tab-adj${entryType==="adjust"?" active":""}`,onClick:()=>{setEntryType("adjust");setAdjustQty("");}},"⚖️ Adjust")
+              ),
+              entryType==="adjust"&&h("div",null,
+                h("div",{style:{background:"#eef2ff",borderRadius:10,padding:"10px 12px",marginBottom:10,fontSize:11,color:"#4338ca",fontWeight:600}},
+                  `Current: ${fmt(item.baseBal)} ${item.baseUnit}${item.conversion!==1?` · ${fmt(item.baseBal*item.conversion)} ${item.outputUnit}`:""}`
+                ),
+                h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:5}},`Physical Count (${item.baseUnit})`),
+                h("div",{style:{display:"flex",gap:8,marginBottom:6}},
+                  h("input",{className:"inp",type:"number",placeholder:`e.g. ${fmt(item.baseBal)}`,min:"0",value:adjustQty,onChange:e=>setAdjustQty(e.target.value),style:{textAlign:"center",fontSize:16,fontWeight:700},autoFocus:true}),
+                  h("button",{className:"btn",style:{whiteSpace:"nowrap",background:"#4338ca",color:"#fff",padding:"11px 16px"},onClick:()=>handleAdjust(item,activeLoc)},"Set ✓")
+                ),
+                adjustQty!==""&&!isNaN(parseFloat(adjustQty))&&(()=>{
+                  const diff=parseFloat(adjustQty)-item.baseBal;
+                  return h("div",{style:{fontSize:11,fontFamily:"'Space Mono'",fontWeight:700,color:diff>0?"#16a34a":diff<0?"#ef4444":"#aaa",marginBottom:8}},
+                    diff===0?"No change":`${diff>0?"▲ +":"▼ "}${fmt(+diff.toFixed(4))} ${item.baseUnit}`
+                  );
+                })()
+              ),
+              entryType!=="adjust"&&h("div",null,
+                entryType==="out"&&(activeLoc.destinations||[]).length>0&&h("div",{style:{marginBottom:10}},
+                  h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:5}},"Send to"),
+                  h("div",{style:{display:"flex",gap:6}},
+                    ...(activeLoc.destinations||[]).map(d=>h("button",{key:d,className:`loc-btn${entryDest===d?" active":""}`,onClick:()=>setEntryDest(d)},d))
+                  )
+                ),
+                entryType==="in"&&h("div",{style:{marginBottom:10}},
+                  h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:5}},"Receiving from"),
+                  h("select",{value:entryDest,onChange:e=>setEntryDest(e.target.value)},
+                    h("option",{value:""},"Select source..."),
+                    ...locations.filter(l=>l.id!==activeLocId).map(l=>h("option",{key:l.id,value:l.name},l.name))
+                  )
+                ),
+                entryType==="out"&&item.conversion!==1&&h("div",{style:{marginBottom:10}},
+                  h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:5}},"Qty in"),
+                  h(LocBtns,{options:[["base",item.baseUnit],["output",item.outputUnit]],value:entryUnit,onChange:v=>{setEntryUnit(v);setEntryQty("");}})
+                ),
+                h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:5}},
+                  `Quantity (${entryType==="out"&&entryUnit==="output"?item.outputUnit:item.baseUnit})`
+                ),
+                h("div",{style:{display:"flex",gap:8,marginBottom:8}},
+                  h("input",{className:"inp",type:"number",placeholder:"0",min:"0",value:entryQty,onChange:e=>setEntryQty(e.target.value),style:{textAlign:"center",fontSize:16,fontWeight:700},autoFocus:true}),
+                  h("button",{className:"btn",style:{whiteSpace:"nowrap",background:entryType==="out"?"#111":"#15803d",color:"#fff",padding:"11px 16px"},onClick:()=>handleEntry(item,activeLoc)},entryType==="out"?"Send →":"✓ Got it")
+                ),
+                entryQty&&entryType==="out"&&entryUnit==="output"&&h("div",{style:{fontSize:10,color:"#9e9080",marginBottom:8,fontFamily:"'Space Mono'"}},`= ${fmt(parseFloat(entryQty)/item.conversion)} ${item.baseUnit}`),
+                h("input",{className:"inp",placeholder:"Note (optional)",value:entryNote,onChange:e=>setEntryNote(e.target.value),style:{fontSize:12}})
+              ),
+              h("div",{style:{display:"flex",justifyContent:"flex-end",marginTop:8}},
+                h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>{setEditItem({...item});setModal("editItem");}},"✏️ Edit item")
+              )
+            )
+            ) // close inner div
+          ); // close outer flex wrapper
+        }),
+
+        // EOD not in eodMode here — handled separately below
+      ),
+
+      // ── END OF DAY / STOCK CHECK MODE ──
+      view==="entries"&&activeLoc&&eodMode&&h("div",null,
+        h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:4,padding:"12px 14px",background:activeLoc.color+"18",borderRadius:12,border:`1.5px solid ${activeLoc.color}30`}},
+          h("span",{style:{fontSize:20}},activeLoc.type==="godown"?"📋":"🌙"),
+          h("div",{style:{flex:1}},
+            h("div",{style:{fontSize:13,fontWeight:700,color:activeLoc.color}},activeLoc.type==="godown"?"Stock Check":"End of Day Count"),
+            h("div",{style:{fontSize:10,color:"#9e9080"}},"Enter physical count · leave blank to skip")
+          ),
+          h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>{setEodMode(false);setEodCounts({});}},"✕ Cancel")
+        ),
+        h("div",{style:{fontSize:10,color:"#9e9080",marginBottom:12,textAlign:"center"}},
+          `${Object.values(eodCounts).filter(v=>v!=="").length} of ${(activeLoc.items||[]).length} items counted`
+        ),
+        h("div",{className:"card",style:{overflow:"hidden",marginBottom:13}},
+          ...(sortedItems(activeLoc)).map((item,i)=>{
+            const s=stockStatus(item);
+            const val=eodCounts[item.id]??"";
+            const phys=parseFloat(val);
+            const diff=!isNaN(phys)?+(phys-item.baseBal).toFixed(4):null;
+            return h("div",{key:item.id,style:{padding:"12px 14px",borderBottom:i<(activeLoc.items||[]).length-1?"1px solid #f0ebe0":"none",display:"flex",gap:10,alignItems:"center"}},
+              h("div",{style:{flex:1,minWidth:0}},
+                h("div",{style:{fontSize:12,fontWeight:600}},item.name),
+                h("div",{style:{fontSize:10,color:s.color,marginTop:1}},`Current: ${fmt(item.baseBal)} ${item.baseUnit}`),
+                diff!==null&&diff!==0&&h("div",{style:{fontSize:10,fontWeight:700,color:diff>0?"#16a34a":"#ef4444",marginTop:1}},
+                  `${diff>0?"▲ +":"▼ "}${fmt(diff)} ${item.baseUnit}`
+                )
+              ),
+              h("input",{type:"number",min:"0",placeholder:"—",value:val,
+                onChange:e=>setEodCounts(c=>({...c,[item.id]:e.target.value})),
+                style:{width:80,padding:"8px 10px",background:val?"#f0fdf4":"#f9f9f7",border:`1.5px solid ${val?"#bbf7d0":"#e5e5e0"}`,borderRadius:9,fontFamily:"'Space Mono'",fontSize:14,fontWeight:700,textAlign:"center",outline:"none",color:"#1a1209"}
+              })
+            );
+          })
+        ),
+        h("button",{className:"btn btn-dark",style:{width:"100%",padding:"14px",fontSize:14},onClick:handleEODSubmit},
+          activeLoc.type==="godown"?"✓ Submit Stock Check":"✓ Submit End of Day"
+        )
+      ),
+
+      // ── PURCHASE MODE ──
+      view==="entries"&&activeLoc&&purchaseMode&&h("div",null,
+        h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:4,padding:"12px 14px",background:"#f0fdf4",borderRadius:12,border:"1.5px solid #bbf7d0"}},
+          h("span",{style:{fontSize:20}},"📦"),
+          h("div",{style:{flex:1}},
+            h("div",{style:{fontSize:13,fontWeight:700,color:"#16a34a"}},"Purchase / Stock In"),
+            h("div",{style:{fontSize:10,color:"#9e9080"}},"Enter quantity purchased · leave blank to skip")
+          ),
+          h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>{setPurchaseMode(false);setPurchaseCounts({});}},"✕ Cancel")
+        ),
+        h("div",{style:{fontSize:10,color:"#9e9080",marginBottom:12,textAlign:"center"}},
+          `${Object.values(purchaseCounts).filter(v=>v!=="").length} items entered`
+        ),
+        h("div",{className:"card",style:{overflow:"hidden",marginBottom:13}},
+          ...(sortedItems(activeLoc)).map((item,i)=>{
+            const val=purchaseCounts[item.id]??"";
+            const qty=parseFloat(val);
+            return h("div",{key:item.id,style:{padding:"12px 14px",borderBottom:i<(activeLoc.items||[]).length-1?"1px solid #f0ebe0":"none",display:"flex",gap:10,alignItems:"center"}},
+              h("div",{style:{flex:1,minWidth:0}},
+                h("div",{style:{fontSize:12,fontWeight:600}},item.name),
+                h("div",{style:{fontSize:10,color:"#9e9080",marginTop:1}},`Current: ${fmt(item.baseBal)} ${item.baseUnit}`),
+                !isNaN(qty)&&qty>0&&h("div",{style:{fontSize:10,fontWeight:700,color:"#16a34a",marginTop:1}},
+                  `▲ +${fmt(qty)} → ${fmt(item.baseBal+qty)} ${item.baseUnit}`
+                )
+              ),
+              h("input",{type:"number",min:"0",placeholder:"—",value:val,
+                onChange:e=>setPurchaseCounts(c=>({...c,[item.id]:e.target.value})),
+                style:{width:80,padding:"8px 10px",background:val?"#f0fdf4":"#f9f9f7",border:`1.5px solid ${val?"#16a34a":"#e5e5e0"}`,borderRadius:9,fontFamily:"'Space Mono'",fontSize:14,fontWeight:700,textAlign:"center",outline:"none",color:"#1a1209"}
+              })
+            );
+          })
+        ),
+        h("button",{className:"btn btn-dark",style:{width:"100%",padding:"14px",fontSize:14,background:"#16a34a"},onClick:handlePurchaseSubmit},"📦 Submit Purchase")
+      ),
+
+      // ── REPORTS ──
+      // ── LOG — Transaction Log directly ──
+      view==="log"&&h("div",null,
+        h("div",{style:{fontFamily:"'Space Mono'",fontSize:9,color:"#b0a898",marginBottom:14,letterSpacing:"0.08em"}},"TRANSACTION LOG"),
+        h("div",{className:"card",style:{padding:14,marginBottom:13}},
+          h("div",{style:{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}},
+            ...["today","week","month","lastmonth","all"].map(d=>h("button",{key:d,className:"btn",style:{padding:"5px 10px",fontSize:10,background:reportFilter.date===d?"#111":"#f0efe9",color:reportFilter.date===d?"#fff":"#666",border:"none"},onClick:()=>setReportFilter(f=>({...f,date:d}))},
+              d==="today"?"Today":d==="week"?"Week":d==="month"?"Month":d==="lastmonth"?"Last Mo.":"All"))
+          ),
+          h("div",{style:{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}},
+            ...["all","dispatch","receive","adjustment","purchase","consumption"].map(t=>h("button",{key:t,className:"btn",style:{padding:"5px 9px",fontSize:10,background:reportFilter.type===t?"#111":"#f0efe9",color:reportFilter.type===t?"#fff":"#666",border:"none"},onClick:()=>setReportFilter(f=>({...f,type:t}))},
+              t==="all"?"All Types":txTypeLabel(t)))
+          ),
+          h("select",{value:reportFilter.loc,onChange:e=>setReportFilter(f=>({...f,loc:e.target.value})),style:{fontSize:12,padding:"8px 12px",marginBottom:8}},
+            h("option",{value:"all"},"All Locations"),
+            ...locations.map(l=>h("option",{key:l.id,value:l.id},l.name))
+          ),
+          reportFilter.date==="custom"&&h("div",{style:{display:"flex",gap:8,alignItems:"center",padding:"8px 12px",background:"#f7f4ef",border:"1.5px solid #e0d9ce",borderRadius:10,marginTop:6}},
+            h("span",{style:{fontSize:10,color:"#9e9080",fontWeight:700,whiteSpace:"nowrap"}},"FROM"),
+            h("input",{type:"date",value:reportFilter.customFrom||"",onChange:e=>setReportFilter(f=>({...f,customFrom:e.target.value})),style:{border:"none",outline:"none",fontFamily:"'Sora',sans-serif",fontSize:12,color:"#1a1209",background:"transparent",flex:1,minWidth:0}}),
+            h("span",{style:{color:"#c4b8aa"}},"→"),
+            h("span",{style:{fontSize:10,color:"#9e9080",fontWeight:700,whiteSpace:"nowrap"}},"TO"),
+            h("input",{type:"date",value:reportFilter.customTo||"",onChange:e=>setReportFilter(f=>({...f,customTo:e.target.value})),style:{border:"none",outline:"none",fontFamily:"'Sora',sans-serif",fontSize:12,color:"#1a1209",background:"transparent",flex:1,minWidth:0}})
+          )
+        ),
+        (()=>{
+          const filtered=transactions.filter(t=>{
+            if(reportFilter.type!=="all"&&t.type!==reportFilter.type)return false;
+            if(reportFilter.loc!=="all"&&t.locId!==reportFilter.loc&&t.srcLocId!==reportFilter.loc&&t.destLocId!==reportFilter.loc)return false;
+            const range=getDateRange(reportFilter);
+            return txInRange(t,range);
+          });
+          return h("div",null,
+            h("div",{style:{fontFamily:"'Space Mono'",fontSize:9,color:"#b0a898",marginBottom:10,letterSpacing:"0.08em"}},`${filtered.length} TRANSACTIONS`),
+            filtered.length===0?h("div",{className:"card",style:{padding:36,textAlign:"center",color:"#c4b8aa",fontSize:12}},"No transactions for this filter."):
+            h("div",{className:"card",style:{overflow:"hidden"}},
+              ...filtered.map((tx,i)=>h("div",{key:tx.id||i},
+                h("div",{style:{padding:"12px 15px",borderBottom:"1px solid #f0ebe0",display:"flex",gap:10,alignItems:"center"}},
+                  h("div",{style:{width:30,height:30,borderRadius:8,background:txColor(tx.type),display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}},txIcon(tx.type)),
+                  h("div",{style:{flex:1,minWidth:0}},
+                    h("div",{style:{fontSize:12,fontWeight:600}},tx.itemName),
+                    h("div",{style:{fontSize:10,color:"#9e9080",marginTop:1}},
+                      tx.type==="dispatch"?`${tx.locName} → ${tx.dest}`:
+                      tx.type==="purchase"?`${tx.locName} · Purchased`:
+                      tx.type==="consumption"?`${tx.locName} · Consumed`:
+                      tx.type==="adjustment"?`${tx.locName} · Adjustment`:
+                      `${tx.srcLocName||"External"} → ${tx.locName}`
+                    ),
+                    h("div",{style:{fontSize:10,color:"#b0a898",marginTop:1}},tx.qtyDisplay),
+                    tx.note&&h("div",{style:{fontSize:10,color:"#c4b8aa",fontStyle:"italic",marginTop:1}},`"${tx.note}"`)
+                  ),
+                  h("div",{style:{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}},
+                    h("span",{className:"chip",style:{background:txColor(tx.type),color:txTextColor(tx.type)}},txTypeLabel(tx.type)),
+                    h("div",{style:{fontSize:9,color:"#c4b8aa",fontFamily:"'Space Mono'"}},tx.date),
+                    h("button",{className:"btn",style:{fontSize:9,padding:"3px 8px",background:"#fef2f2",color:"#b91c1c",border:"1px solid #fecaca",marginTop:2},onClick:()=>setDeleteConfirm(deleteConfirm===tx.id?null:tx.id)},"🗑 Delete")
+                  )
+                ),
+                deleteConfirm===tx.id&&h("div",{style:{padding:"10px 15px",background:"#fef2f2",borderBottom:"1px solid #fecaca"}},
+                  h("div",{style:{fontSize:11,fontWeight:600,color:"#b91c1c",marginBottom:6}},"Delete & reverse stock?"),
+                  h("div",{style:{display:"flex",gap:8}},
+                    h("button",{className:"btn btn-ghost",style:{flex:1,fontSize:11},onClick:()=>setDeleteConfirm(null)},"Cancel"),
+                    h("button",{className:"btn",style:{flex:2,background:"#b91c1c",color:"#fff",fontSize:11},onClick:()=>handleDeleteTx(tx)},"Yes, Delete & Reverse")
+                  )
+                )
+              ))
+            )
+          );
+        })()
+      ),
+
+      // ── REPORTS ──
+      view==="reports"&&h("div",null,
+        !reportView&&h("div",null,
+          h("div",{style:{fontFamily:"'Space Mono'",fontSize:9,color:"#b0a898",marginBottom:14,letterSpacing:"0.08em"}},"REPORTS"),
+          h("div",{className:"report-card",style:{background:"#f0fdf4",borderColor:"#bbf7d0"},onClick:()=>setReportView("movement")},
+            h("div",null,h("div",{style:{fontSize:14,fontWeight:700,marginBottom:3}},"📦 Stock Movement Report"),h("div",{style:{fontSize:11,color:"#9e9080"}},"Opening · purchases · dispatches · closing per item")),h("span",{style:{fontSize:18,color:"#c4b8aa"}})
+          ),
+          h("div",{className:"report-card",style:{background:"#fef9c3",borderColor:"#fde68a"},onClick:()=>setReportView("consumption")},
+            h("div",null,h("div",{style:{fontSize:14,fontWeight:700,marginBottom:3}},"🍽 Consumption Report"),h("div",{style:{fontSize:11,color:"#9e9080"}},"What was actually used at each outlet")),h("span",{style:{fontSize:18,color:"#c4b8aa"}})
+          ),
+          h("div",{className:"report-card",style:{background:"#eef2ff",borderColor:"#c7d2fe"},onClick:()=>setReportView("summary")},
+            h("div",null,h("div",{style:{fontSize:14,fontWeight:700,marginBottom:3}},"📊 Location-wise Stock Summary"),h("div",{style:{fontSize:11,color:"#9e9080"}},"All items across all locations side by side")),h("span",{style:{fontSize:18,color:"#c4b8aa"}})
+          )
+        ),
+
+        // ── STOCK MOVEMENT REPORT ──
+        reportView==="movement"&&(()=>{
+          const smData=getSmData();
+          const totalDispatched=smData.filter(i=>!i.isOutlet).reduce((s,i)=>s+i.dispatched,0);
+          const totalConsumed=smData.filter(i=>i.isOutlet).reduce((s,i)=>s+i.consumed,0);
+          const totalPurchased=smData.reduce((s,i)=>s+i.purchased,0);
+          const slowMovers=smData.filter(i=>i.mainMovement===0&&i.totalMovement===0);
+          const shrinkage=smData.filter(i=>i.adjusted<-0.001);
+          const reorderItems=locations.flatMap(l=>(l.items||[]).filter(i=>i.minStock>0&&i.baseBal<=i.minStock).map(i=>({...i,locName:l.name,locColor:l.color})));
+          const movedItems=smData.filter(i=>i.mainMovement>0);
+          const topMoved=movedItems[0]||null;
+          const FBtn=({val,label,f,setF})=>h("button",{className:"btn",style:{padding:"6px 11px",fontSize:11,background:f.date===val?"#111":"#f0efe9",color:f.date===val?"#fff":"#666",border:"none"},onClick:()=>setF(p=>({...p,date:val,showCustom:val==="custom"}))},label);
+          return h("div",null,
+            h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:14}},
+              h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>setReportView(null)},"← Back"),
+              h("div",{style:{fontSize:14,fontWeight:700}},"Stock Movement Report")
+            ),
+            h("div",{style:{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}},
+              h(FBtn,{val:"today",label:"Today",f:smFilter,setF:setSmFilter}),
+              h(FBtn,{val:"week",label:"This Week",f:smFilter,setF:setSmFilter}),
+              h(FBtn,{val:"month",label:"This Month",f:smFilter,setF:setSmFilter}),
+              h(FBtn,{val:"lastmonth",label:"Last Month",f:smFilter,setF:setSmFilter}),
+              h(FBtn,{val:"custom",label:"Custom ▾",f:smFilter,setF:setSmFilter})
+            ),
+            smFilter.showCustom&&h("div",{style:{display:"flex",gap:8,alignItems:"center",background:"#fffdf9",border:"1.5px solid #e0d9ce",borderRadius:12,padding:"9px 13px",marginBottom:8}},
+              h("span",{style:{fontSize:10,color:"#9e9080",fontWeight:700,whiteSpace:"nowrap"}},"FROM"),
+              h("input",{type:"date",value:smFilter.customFrom,onChange:e=>setSmFilter(f=>({...f,customFrom:e.target.value})),style:{border:"none",outline:"none",fontFamily:"'Sora',sans-serif",fontSize:12,color:"#1a1209",background:"transparent",flex:1,minWidth:0}}),
+              h("span",{style:{color:"#c4b8aa"}},"→"),
+              h("span",{style:{fontSize:10,color:"#9e9080",fontWeight:700,whiteSpace:"nowrap"}},"TO"),
+              h("input",{type:"date",value:smFilter.customTo,onChange:e=>setSmFilter(f=>({...f,customTo:e.target.value})),style:{border:"none",outline:"none",fontFamily:"'Sora',sans-serif",fontSize:12,color:"#1a1209",background:"transparent",flex:1,minWidth:0}})
+            ),
+            h("div",{style:{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}},
+              ...["all",...locations.map(l=>l.id)].map(lid=>{
+                const l=locations.find(x=>x.id===lid);
+                return h("button",{key:lid,className:"btn",style:{padding:"5px 10px",fontSize:11,background:smFilter.loc===lid?"#111":"#f0efe9",color:smFilter.loc===lid?"#fff":l?l.color:"#666",border:l?`1.5px solid ${l.color}30`:"none"},onClick:()=>setSmFilter(f=>({...f,loc:lid}))},
+                  lid==="all"?"All":l?`${locIcon(l)} ${l.shortName}`:lid);
+              })
+            ),
+            h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}},
+              h("div",{className:"card",style:{padding:12,borderTop:"3px solid #ef4444"}},
+                h("div",{style:{fontSize:9,color:"#9e9080",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:4}},"Reorder"),
+                h("div",{style:{fontFamily:"'Space Mono'",fontSize:22,fontWeight:700,color:"#ef4444"}},reorderItems.length),
+                h("div",{style:{fontSize:9,color:"#9e9080",marginTop:2}},reorderItems.length===0?"All good ✓":"items low")
+              ),
+              h("div",{className:"card",style:{padding:12,borderTop:"3px solid #16a34a"}},
+                h("div",{style:{fontSize:9,color:"#9e9080",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:4}},"Top Moved"),
+                h("div",{style:{fontSize:11,fontWeight:700,color:"#1a1209",marginBottom:2,lineHeight:1.2,minHeight:28,overflow:"hidden"}},topMoved?topMoved.name:"—"),
+                h("div",{style:{fontFamily:"'Space Mono'",fontSize:12,fontWeight:700,color:"#16a34a"}},topMoved?`${fmt(topMoved.mainMovement)} ${topMoved.unit}`:"No data")
+              ),
+              h("div",{className:"card",style:{padding:12,borderTop:"3px solid #94a3b8"}},
+                h("div",{style:{fontSize:9,color:"#9e9080",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:4}},"Slow Movers"),
+                h("div",{style:{fontFamily:"'Space Mono'",fontSize:22,fontWeight:700,color:"#94a3b8"}},slowMovers.length),
+                h("div",{style:{fontSize:9,color:"#9e9080",marginTop:2}},"no movement")
+              )
+            ),
+            h("div",{className:"card",style:{marginBottom:14}},
+              h("div",{style:{display:"flex",borderBottom:"1px solid #f0ebe0"}},
+                h("div",{style:{flex:1,padding:"12px 10px",textAlign:"center"}},
+                  h("div",{style:{fontSize:9,color:"#9e9080",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3}},"Dispatched"),
+                  h("div",{style:{fontFamily:"'Space Mono'",fontSize:15,fontWeight:700,color:"#c2410c"}},fmt(totalDispatched))
+                ),
+                h("div",{style:{flex:1,padding:"12px 10px",textAlign:"center",borderLeft:"1px solid #f0ebe0",borderRight:"1px solid #f0ebe0"}},
+                  h("div",{style:{fontSize:9,color:"#9e9080",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3}},"Consumed"),
+                  h("div",{style:{fontFamily:"'Space Mono'",fontSize:15,fontWeight:700,color:"#d97706"}},fmt(totalConsumed))
+                ),
+                h("div",{style:{flex:1,padding:"12px 10px",textAlign:"center"}},
+                  h("div",{style:{fontSize:9,color:"#9e9080",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3}},"Purchased"),
+                  h("div",{style:{fontFamily:"'Space Mono'",fontSize:15,fontWeight:700,color:"#16a34a"}},fmt(totalPurchased))
+                )
+              )
+            ),
+            movedItems.length>0&&h("div",null,
+              h("div",{style:{fontFamily:"'Space Mono'",fontSize:9,color:"#b0a898",marginBottom:9,letterSpacing:"0.08em"}},"ITEMS BY MOVEMENT · TAP TO EXPAND"),
+              h("div",{className:"card",style:{overflow:"hidden",marginBottom:14}},
+                ...(()=>{
+                  const maxQ=Math.max(...movedItems.map(i=>i.mainMovement));
+                  return movedItems.map(item=>{
+                    const pct=(item.mainMovement/maxQ)*100;
+                    const isExp=smExpandedId===`${item.itemId}_${item.locId}`;
+                    const netChange=+(item.closing-item.opening).toFixed(4);
+                    return h("div",{key:`${item.itemId}_${item.locId}`},
+                      h("div",{style:{padding:"12px 14px",cursor:"pointer",borderBottom:"1px solid #f5f0e8",background:isExp?"#f9f9f7":"#fff"},onClick:()=>setSmExpandedId(isExp?null:`${item.itemId}_${item.locId}`)},
+                        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}},
+                          h("div",{style:{flex:1,minWidth:0}},
+                            h("div",{style:{display:"flex",alignItems:"center",gap:6,marginBottom:2}},
+                              h("div",{style:{width:7,height:7,borderRadius:"50%",background:item.locColor,flexShrink:0}}),
+                              h("div",{style:{fontSize:12,fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},item.name)
+                            ),
+                            h("div",{style:{display:"flex",gap:5}},
+                              h("span",{style:{fontSize:10,color:item.locColor,fontWeight:600}},item.locName),
+                              h("span",{className:"chip",style:{background:item.isOutlet?"#fff7ed":"#f0fdf4",color:item.isOutlet?"#c2410c":"#16a34a",fontSize:9}},item.isOutlet?"Outlet":"Godown")
+                            )
+                          ),
+                          h("div",{style:{textAlign:"right",flexShrink:0,marginLeft:8}},
+                            h("div",{style:{fontFamily:"'Space Mono'",fontSize:15,fontWeight:700}},fmt(item.mainMovement)),
+                            h("div",{style:{fontSize:9,color:"#9e9080"}},item.isOutlet?"consumed":"dispatched")
+                          ),
+                          h("span",{style:{fontSize:10,color:"#c4b8aa",marginLeft:6}},isExp?"▲":"▼")
+                        ),
+                        h("div",{style:{height:6,background:"#f0ebe0",borderRadius:3,overflow:"hidden"}},
+                          h("div",{style:{height:"100%",width:`${pct}%`,background:item.locColor,borderRadius:3}})
+                        )
+                      ),
+                      isExp&&h("div",{style:{padding:"14px 16px",background:"#f7f4ef",borderBottom:"1px solid #ede8df"}},
+                        h("div",{style:{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #ede8df"}},
+                          h("span",{style:{fontSize:11,fontWeight:600,color:"#555"}},"Opening Stock"),
+                          h("span",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700}},`${fmt(item.opening)} ${item.unit}`)
+                        ),
+                        item.purchased>0&&h("div",{style:{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #ede8df"}},
+                          h("div",{style:{display:"flex",gap:6}},h("span","📦"),h("span",{style:{fontSize:11,fontWeight:600}},"Purchased")),
+                          h("span",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#16a34a"}},`+${fmt(item.purchased)} ${item.unit}`)
+                        ),
+                        item.received>0&&h("div",{style:{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #ede8df"}},
+                          h("div",{style:{display:"flex",gap:6}},h("span","📥"),h("span",{style:{fontSize:11,fontWeight:600}},"Received")),
+                          h("span",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#15803d"}},`+${fmt(item.received)} ${item.unit}`)
+                        ),
+                        !item.isOutlet&&item.dispatched>0&&h("div",{style:{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #ede8df"}},
+                          h("div",{style:{display:"flex",gap:6}},h("span","📤"),h("span",{style:{fontSize:11,fontWeight:600}},"Dispatched")),
+                          h("span",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#c2410c"}},`−${fmt(item.dispatched)} ${item.unit}`)
+                        ),
+                        item.isOutlet&&item.consumed>0&&h("div",{style:{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #ede8df"}},
+                          h("div",{style:{display:"flex",gap:6}},h("span","🍽"),h("span",{style:{fontSize:11,fontWeight:600}},"Consumed")),
+                          h("span",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#d97706"}},`−${fmt(item.consumed)} ${item.unit}`)
+                        ),
+                        item.adjusted!==0&&h("div",{style:{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #ede8df"}},
+                          h("div",{style:{display:"flex",gap:6}},h("span","⚖️"),h("span",{style:{fontSize:11,fontWeight:600}},"Adjusted")),
+                          h("span",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#7c3aed"}},`${item.adjusted>0?"+":""}${fmt(item.adjusted)} ${item.unit}`)
+                        ),
+                        h("div",{style:{height:1,background:"#e0d9ce",margin:"6px 0"}}),
+                        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"4px 0"}},
+                          h("div",null,
+                            h("div",{style:{fontSize:12,fontWeight:700}},"Closing Stock"),
+                            h("div",{style:{fontSize:10,color:"#9e9080"}},`Net: ${netChange>=0?"+":""}${fmt(netChange)} ${item.unit}`)
+                          ),
+                          h("div",{style:{fontFamily:"'Space Mono'",fontSize:18,fontWeight:700}},`${fmt(item.closing)} ${item.unit}`)
+                        )
+                      )
+                    );
+                  });
+                })()
+              )
+            ),
+            reorderItems.length>0&&h("div",null,
+              h("div",{style:{fontFamily:"'Space Mono'",fontSize:9,color:"#ef4444",marginBottom:9,letterSpacing:"0.08em"}},"🔴 REORDER REQUIRED"),
+              h("div",{className:"card",style:{overflow:"hidden",marginBottom:14}},
+                ...reorderItems.map((item,i)=>h("div",{key:i,style:{padding:"10px 14px",borderBottom:i<reorderItems.length-1?"1px solid #f0ebe0":"none",display:"flex",justifyContent:"space-between",alignItems:"center"}},
+                  h("div",null,h("div",{style:{fontSize:12,fontWeight:600}},item.name),h("div",{style:{fontSize:10,color:"#9e9080",marginTop:1}},item.locName)),
+                  h("div",{style:{textAlign:"right"}},h("div",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#ef4444"}},`${fmt(item.baseBal)} ${item.baseUnit}`),h("div",{style:{fontSize:9,color:"#9e9080"}},`Min: ${item.minStock}`))
+                ))
+              )
+            ),
+            slowMovers.length>0&&h("div",null,
+              h("div",{style:{fontFamily:"'Space Mono'",fontSize:9,color:"#94a3b8",marginBottom:9,letterSpacing:"0.08em"}},"🐢 SLOW MOVERS — NO MOVEMENT THIS PERIOD"),
+              h("div",{className:"card",style:{overflow:"hidden",marginBottom:14}},
+                ...slowMovers.map((item,i)=>h("div",{key:i,style:{padding:"10px 14px",borderBottom:i<slowMovers.length-1?"1px solid #f0ebe0":"none",display:"flex",justifyContent:"space-between",alignItems:"center"}},
+                  h("div",null,h("div",{style:{fontSize:12,fontWeight:600}},item.name),h("div",{style:{fontSize:10,color:item.locColor,marginTop:1}},item.locName)),
+                  h("span",{className:"chip",style:{background:"#f1f5f9",color:"#64748b"}},"No movement")
+                ))
+              )
+            ),
+            shrinkage.length>0&&h("div",null,
+              h("div",{style:{fontFamily:"'Space Mono'",fontSize:9,color:"#ef4444",marginBottom:9,letterSpacing:"0.08em"}},"⚠️ SHRINKAGE"),
+              h("div",{className:"card",style:{overflow:"hidden",marginBottom:14}},
+                ...shrinkage.map((item,i)=>h("div",{key:i,style:{padding:"10px 14px",borderBottom:i<shrinkage.length-1?"1px solid #f0ebe0":"none",display:"flex",justifyContent:"space-between",alignItems:"center"}},
+                  h("div",null,h("div",{style:{fontSize:12,fontWeight:600}},item.name),h("div",{style:{fontSize:10,color:item.locColor,marginTop:1}},item.locName)),
+                  h("div",{style:{textAlign:"right"}},h("div",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#ef4444"}},`${fmt(item.adjusted)} ${item.unit}`))
+                ))
+              )
+            ),
+            movedItems.length===0&&reorderItems.length===0&&slowMovers.length===0&&h("div",{className:"card",style:{padding:36,textAlign:"center",color:"#c4b8aa",fontSize:13}},"No movement in this period ✓")
+          );
+        })(),
+
+        // ── CONSUMPTION REPORT ──
+        reportView==="consumption"&&(()=>{
+          const consData=getConsData();
+          const maxCons=consData.length>0?Math.max(...consData.map(i=>i.consumed)):1;
+          const FBtn=({val,label})=>h("button",{className:"btn",style:{padding:"6px 11px",fontSize:11,background:consFilter.date===val?"#111":"#f0efe9",color:consFilter.date===val?"#fff":"#666",border:"none"},onClick:()=>setConsFilter(p=>({...p,date:val,showCustom:val==="custom"}))},label);
+          return h("div",null,
+            h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:14}},
+              h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>setReportView(null)},"← Back"),
+              h("div",{style:{fontSize:14,fontWeight:700}},"Consumption Report")
+            ),
+            h("div",{style:{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}},
+              h(FBtn,{val:"today",label:"Today"}),h(FBtn,{val:"week",label:"This Week"}),h(FBtn,{val:"month",label:"This Month"}),h(FBtn,{val:"lastmonth",label:"Last Month"}),h(FBtn,{val:"custom",label:"Custom ▾"})
+            ),
+            consFilter.showCustom&&h("div",{style:{display:"flex",gap:8,alignItems:"center",background:"#fffdf9",border:"1.5px solid #e0d9ce",borderRadius:12,padding:"9px 13px",marginBottom:8}},
+              h("span",{style:{fontSize:10,color:"#9e9080",fontWeight:700,whiteSpace:"nowrap"}},"FROM"),
+              h("input",{type:"date",value:consFilter.customFrom,onChange:e=>setConsFilter(f=>({...f,customFrom:e.target.value})),style:{border:"none",outline:"none",fontFamily:"'Sora',sans-serif",fontSize:12,color:"#1a1209",background:"transparent",flex:1,minWidth:0}}),
+              h("span",{style:{color:"#c4b8aa"}},"→"),
+              h("span",{style:{fontSize:10,color:"#9e9080",fontWeight:700,whiteSpace:"nowrap"}},"TO"),
+              h("input",{type:"date",value:consFilter.customTo,onChange:e=>setConsFilter(f=>({...f,customTo:e.target.value})),style:{border:"none",outline:"none",fontFamily:"'Sora',sans-serif",fontSize:12,color:"#1a1209",background:"transparent",flex:1,minWidth:0}})
+            ),
+            h("div",{style:{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}},
+              ...["all",...locations.filter(l=>l.type==="outlet"||l.type==="outlet_ro").map(l=>l.id)].map(lid=>{
+                const l=locations.find(x=>x.id===lid);
+                return h("button",{key:lid,className:"btn",style:{padding:"5px 10px",fontSize:11,background:consFilter.loc===lid?"#111":"#f0efe9",color:consFilter.loc===lid?"#fff":l?l.color:"#666",border:l?`1.5px solid ${l.color}30`:"none"},onClick:()=>setConsFilter(f=>({...f,loc:lid}))},
+                  lid==="all"?"All Outlets":l?`${locIcon(l)} ${l.shortName}`:lid);
+              })
+            ),
+            consData.length===0
+              ?h("div",{className:"card",style:{padding:36,textAlign:"center",color:"#c4b8aa",fontSize:13}},"No consumption data yet. Do an End of Day count at an outlet to start tracking.")
+              :h("div",{className:"card",style:{padding:16}},
+                h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},
+                  h("div",null,h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:2}},"Most Consumed"),h("div",{style:{fontSize:13,fontWeight:700}},`${consData.length} items`)),
+                  h("span",{className:"chip",style:{background:"#fef9c3",color:"#854d0e"}},"🍽 Consumed")
+                ),
+                ...consData.map(item=>h("div",{key:`${item.name}_${item.locId}`,style:{marginBottom:14}},
+                  h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}},
+                    h("div",{style:{flex:1,minWidth:0}},
+                      h("div",{style:{fontSize:12,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},item.name),
+                      h("div",{style:{fontSize:10,color:item.locColor,fontWeight:600,marginTop:1}},item.locName)
+                    ),
+                    h("div",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#d97706",flexShrink:0,marginLeft:8}},`${fmt(item.consumed)} ${item.unit}`)
+                  ),
+                  h("div",{style:{height:7,background:"#f0ebe0",borderRadius:4,overflow:"hidden"}},
+                    h("div",{style:{height:"100%",width:`${(item.consumed/maxCons)*100}%`,background:item.locColor,borderRadius:4}})
+                  )
+                ))
+              )
+          );
+        })(),
+
+        // ── LOCATION-WISE STOCK SUMMARY ──
+        reportView==="summary"&&h("div",null,
+          h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:14}},
+            h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>setReportView(null)},"← Back"),
+            h("div",{style:{fontSize:14,fontWeight:700}},"Location-wise Stock Summary")
+          ),
+          h("input",{className:"inp",placeholder:"🔍 Search item...",value:reportFilter.search||"",onChange:e=>setReportFilter(f=>({...f,search:e.target.value})),style:{marginBottom:12}}),
+          h("div",{style:{overflowX:"auto"}},
+            h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:11,background:"#fffdf9",borderRadius:14,overflow:"hidden",border:"1px solid #e8e2d9"}},
+              h("thead",null,h("tr",{style:{background:"#f7f4ef"}},
+                h("th",{style:{padding:"10px 12px",textAlign:"left",fontWeight:700,fontSize:10,letterSpacing:"0.06em",textTransform:"uppercase",color:"#9e9080",position:"sticky",left:0,background:"#f7f4ef",minWidth:140}},"Item"),
+                ...locations.map(l=>h("th",{key:l.id,style:{padding:"10px 8px",textAlign:"center",fontWeight:700,fontSize:10,color:l.color,whiteSpace:"nowrap"}},`${locIcon(l)} ${l.shortName}`))
+              )),
+              h("tbody",null,
+                ...allItemNames.filter(n=>!reportFilter.search||n.toLowerCase().includes(reportFilter.search.toLowerCase())).map((name,ri)=>
+                  h("tr",{key:name,style:{borderTop:"1px solid #f0ebe0",background:ri%2===0?"#fff":"#fafaf8"}},
+                    h("td",{style:{padding:"9px 12px",fontWeight:600,fontSize:11,position:"sticky",left:0,background:ri%2===0?"#fff":"#fafaf8"}},name),
+                    ...locations.map(l=>{
+                      const item=(l.items||[]).find(i=>i.name===name);
+                      const s=item?stockStatus(item):null;
+                      return h("td",{key:l.id,style:{padding:"9px 8px",textAlign:"center",color:s?s.color:"#e5e5e0",fontFamily:"'Space Mono'",fontSize:11,fontWeight:700}},item?fmt(item.baseBal):"—");
+                    })
+                  )
+                )
+              )
+            )
+          )
+        )
+      ),
+
+      // ── MASTERS ──
+      view==="masters"&&h("div",null,
+        h("div",{style:{fontFamily:"'Space Mono'",fontSize:9,color:"#b0a898",letterSpacing:"0.08em",marginBottom:14}},"MASTERS"),
+
+        // Two cards — Items and Locations
+        !masterView&&h("div",null,
+          h("div",{className:"card",style:{padding:20,marginBottom:12,cursor:"pointer",display:"flex",alignItems:"center",gap:16,borderLeft:"4px solid #4338ca"},
+            onClick:()=>setMasterView("items")},
+            h("div",{style:{width:44,height:44,borderRadius:12,background:"#eef2ff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}},"📋"),
+            h("div",null,
+              h("div",{style:{fontSize:15,fontWeight:700,marginBottom:3}},"Items"),
+              h("div",{style:{fontSize:11,color:"#9e9080"}},`${masterItems.length} master items · edit name, unit, price`)
+            ),
+            h("span",{style:{fontSize:18,color:"#c4b8aa",marginLeft:"auto"}})
+          ),
+          h("div",{className:"card",style:{padding:20,cursor:"pointer",display:"flex",alignItems:"center",gap:16,borderLeft:"4px solid #16a34a"},
+            onClick:()=>setMasterView("locations")},
+            h("div",{style:{width:44,height:44,borderRadius:12,background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}},"🏭"),
+            h("div",null,
+              h("div",{style:{fontSize:15,fontWeight:700,marginBottom:3}},"Locations"),
+              h("div",{style:{fontSize:11,color:"#9e9080"}},`${locations.length} locations · add, edit, manage`)
+            ),
+            h("span",{style:{fontSize:18,color:"#c4b8aa",marginLeft:"auto"}})
+          )
+        ),
+
+        // Items sub-view — Master Catalog
+        masterView==="items"&&h("div",null,
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},
+            h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+              h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>setMasterView(false)},"← Back"),
+              h("div",{style:{fontSize:14,fontWeight:700}},"Items")
+            ),
+            h("button",{className:"btn btn-dark",style:{fontSize:11,padding:"7px 13px"},onClick:()=>setModal("addItem")},"+ Add Item")
+          ),
+          h("div",{style:{fontSize:11,color:"#9e9080",marginBottom:14,lineHeight:1.5}},
+            "Edit name, unit, conversion or price here — changes update ",h("strong",null,"all locations")," automatically."
+          ),
+          masterItems.length===0
+            ?h("div",{className:"card",style:{padding:36,textAlign:"center",color:"#c4b8aa",fontSize:13}},"No items yet.")
+            :h("div",{className:"card",style:{overflow:"hidden"}},
+              ...masterItems.map((mi,i)=>{
+                const locCount=locations.filter(l=>(l.items||[]).some(it=>it.masterItemId===mi.id)).length;
+                return h("div",{key:mi.id,style:{padding:"13px 15px",borderBottom:i<masterItems.length-1?"1px solid #f0ebe0":"none",display:"flex",justifyContent:"space-between",alignItems:"center",gap:10}},
+                  h("div",{style:{flex:1,minWidth:0}},
+                    h("div",{style:{fontSize:12,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},mi.name),
+                    h("div",{style:{fontSize:10,color:"#9e9080",marginTop:2}},`${mi.baseUnit} · 1${mi.baseUnit}=${mi.conversion}${mi.outputUnit} · ${locCount} location${locCount!==1?"s":""}`),
+                    mi.costPerUnit>0&&h("div",{style:{fontSize:10,color:"#16a34a",marginTop:1}},`₹${mi.costPerUnit} / ${mi.costUnit==="output"?mi.outputUnit:mi.baseUnit}`)
+                  ),
+                  h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px",flexShrink:0},onClick:()=>{setEditMasterItem({...mi});setModal("editMaster");}},"✏️ Edit")
+                );
+              })
+            )
+        ),
+
+        // Locations sub-view
+        masterView==="locations"&&h("div",null,
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},
+            h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+              h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>setMasterView(false)},"← Back"),
+              h("div",{style:{fontSize:14,fontWeight:700}},"Locations")
+            ),
+            h("button",{className:"btn btn-dark",style:{fontSize:11,padding:"7px 13px"},onClick:()=>setModal("addLoc")},"+ Location")
+          ),
+
+        // Locations list
+        h("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+          ...locations.map(l=>{
+            const low=(l.items||[]).filter(i=>i.minStock>0&&i.baseBal<=i.minStock).length;
+            return h("div",{key:l.id,className:"card",style:{padding:16}},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}},
+                h("div",{style:{display:"flex",alignItems:"center",gap:8,cursor:"pointer"},onClick:()=>{setActiveLocId(l.id);setView("entries");}},
+                  h("div",{style:{width:40,height:40,borderRadius:11,background:l.color+"18",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}},locIcon(l)),
+                  h("div",null,
+                    h("div",{style:{fontSize:14,fontWeight:700}},l.name),
+                    h("div",{style:{fontSize:10,color:"#9e9080",marginTop:2}},l.type==="godown"?"Godown":l.type==="outlet"?"Outlet":"Outlet (receive only)")
+                  )
+                ),
+                h("div",{style:{textAlign:"right"}},
+                  h("div",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#16a34a"}},fmtRs(locValue(l))),
+                  h("div",{style:{fontSize:10,color:"#9e9080",marginTop:2}},`${(l.items||[]).length} items`)
+                )
+              ),
+              h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}},
+                h("div",{style:{display:"flex",gap:6,flexWrap:"wrap"}},
+                  low>0&&h("span",{className:"chip",style:{background:"#fef3c7",color:"#92400e"}},`⚠ ${low} low`),
+                  ...(l.destinations||[]).map(d=>h("span",{key:d,className:"chip",style:{background:"#f1f5f9",color:"#475569"}},`→ ${d}`)),
+                  l.type==="outlet_ro"&&h("span",{className:"chip",style:{background:"#f5f5f5",color:"#9e9080"}},"receive only")
+                ),
+                h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"5px 11px"},onClick:()=>{setEditLoc({...l});setModal("editLoc");}},"✏️ Edit")
+              )
+            );
+          })
+        )
+      )
+      )
+    ),
+
+      // BOTTOM NAV + LOCATION TABS (mobile only)
+      h("div",{style:{position:"fixed",bottom:0,left:0,right:0,zIndex:50}},
+        view==="entries"&&h("div",{style:{background:"#fffdf9",borderTop:"1px solid #e8e2d9",overflowX:"auto"}},
+          h("div",{style:{maxWidth:600,margin:"0 auto",padding:"8px 14px",display:"flex",gap:7}},
+            ...locations.map(l=>h("div",{key:l.id,className:"loc-pill",
+              onClick:()=>{setActiveLocId(l.id);setSearch("");setExpandedItemId(null);},
+              style:{background:activeLocId===l.id?l.color:"#f2ede4",color:activeLocId===l.id?"#fff":"#666",borderColor:activeLocId===l.id?l.color:"#e0d9ce"}},
+              `${locIcon(l)} ${l.shortName}`
+            ))
+          )
+        ),
+        h("div",{style:{background:"#fffdf9",borderTop:"1px solid #e8e2d9",padding:"6px 4px 12px",display:"flex",justifyContent:"center",gap:0}},
+          h(NavItem,{id:"home",icon:"◈",label:"Home"}),
+          h(NavItem,{id:"inventory",icon:"⊞",label:"Inventory"}),
+          h(NavItem,{id:"entries",icon:"▦",label:"Entries"}),
+          h(NavItem,{id:"log",icon:"↕",label:"Log"}),
+          h(NavItem,{id:"reports",icon:"≡",label:"Reports"}),
+          h(NavItem,{id:"masters",icon:"⬡",label:"Masters"})
+        )
+      ),
+    ),
+
+    // ── DASHBOARD MODALS ──
+    dashModal&&activeLoc&&h("div",{className:"overlay",onClick:()=>setDashModal(null)},
+      h("div",{style:{width:"100%",maxWidth:520,borderRadius:"20px 20px 0 0",maxHeight:"88vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+        h("div",{className:"sheet",style:{background:"#fffdf9",padding:22,borderRadius:"20px 20px 0 0"}},
+          h(SheetHandle),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+            h("div",{style:{fontSize:15,fontWeight:700}},
+              dashModal==="items"?`All Items — ${activeLoc.name}`:
+              dashModal==="low"?`⚠️ Low Stock — ${activeLoc.name}`:
+              `📋 Today's Entries — ${activeLoc.name}`
+            ),
+            h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>setDashModal(null)},"✕ Close")
+          ),
+          dashModal==="items"&&h("div",null,
+            sortedItems(activeLoc).length===0?h("div",{style:{textAlign:"center",color:"#c4b8aa",padding:24}},"No items yet."):
+            sortedItems(activeLoc).map((item,i)=>{const s=stockStatus(item);return h("div",{key:item.id,style:{padding:"11px 0",borderBottom:i<(activeLoc.items||[]).length-1?"1px solid #f0ebe0":"none",display:"flex",justifyContent:"space-between",alignItems:"center"}},
+              h("div",null,h("div",{style:{fontSize:13,fontWeight:600}},item.name),h("div",{style:{fontSize:10,color:"#9e9080",marginTop:2}},`Min: ${item.minStock} ${item.baseUnit}`)),
+              h("div",{style:{textAlign:"right"}},
+                h("div",{style:{fontFamily:"'Space Mono'",fontSize:14,fontWeight:700,color:s.color}},`${fmt(item.baseBal)} ${item.baseUnit}`),
+                item.conversion!==1&&h("div",{style:{fontSize:10,color:"#c4b8aa"}},`${fmt(item.baseBal*item.conversion)} ${item.outputUnit}`)
+              )
+            );})
+          ),
+          dashModal==="low"&&h("div",null,
+            activeLowStock.length===0?h("div",{style:{textAlign:"center",color:"#9e9080",padding:24,fontSize:13}},"🎉 No low stock items!"):
+            activeLowStock.map((item,i)=>{const s=stockStatus(item);return h("div",{key:i,style:{padding:"11px 0",borderBottom:i<activeLowStock.length-1?"1px solid #f0ebe0":"none",display:"flex",justifyContent:"space-between",alignItems:"center"}},
+              h("div",null,h("div",{style:{fontSize:13,fontWeight:600}},item.name),h("div",{style:{fontSize:10,color:"#9e9080",marginTop:2}},`${fmt(item.baseBal)} ${item.baseUnit} · Min: ${item.minStock}`)),
+              h("span",{className:"chip",style:{background:s.bg,color:s.color}},s.label)
+            );})
+          ),
+          dashModal==="today"&&h("div",null,
+            todayTx.filter(t=>t.locId===activeLocId).length===0?h("div",{style:{textAlign:"center",color:"#9e9080",padding:24,fontSize:13}},"No entries today."):
+            todayTx.filter(t=>t.locId===activeLocId).map((tx,i)=>h("div",{key:tx.id,style:{padding:"10px 0",borderBottom:"1px solid #f0ebe0",display:"flex",gap:10,alignItems:"center"}},
+              h("div",{style:{width:30,height:30,borderRadius:8,background:txColor(tx.type),display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}},txIcon(tx.type)),
+              h("div",{style:{flex:1,minWidth:0}},
+                h("div",{style:{fontSize:12,fontWeight:600}},tx.itemName),
+                h("div",{style:{fontSize:10,color:"#9e9080",marginTop:1}},tx.type==="dispatch"?`→ ${tx.dest}`:tx.type==="adjustment"?"Adjusted":"← Received")
+              ),
+              h("span",{className:"chip",style:{background:txColor(tx.type),color:txTextColor(tx.type)}},tx.qtyDisplay)
+            ))
+          ),
+          h("button",{className:"btn btn-ghost",style:{width:"100%",marginTop:16},onClick:()=>setDashModal(null)},"Close")
+        )
+      )
+    ),
+
+    // ── INVENTORY VALUE DETAIL SHEET ──
+    valLocId&&h("div",{className:"overlay",onClick:()=>{setValLocId(null);setEditPriceItem(null);}},
+      h("div",{style:{width:"100%",maxWidth:520,borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+        h("div",{className:"sheet",style:{background:"#fffdf9",padding:22,borderRadius:"20px 20px 0 0"}},
+          h(SheetHandle),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+            h("div",{style:{fontSize:15,fontWeight:700}},"Inventory Value"),
+            h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>{setValLocId(null);setEditPriceItem(null);}},"✕ Close")
+          ),
+          (()=>{
+            const loc=locations.find(l=>l.id===valLocId);
+            if(!loc)return null;
+            const lVal=locValue(loc);
+            return h("div",null,
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}},
+                h("div",{style:{fontSize:13,fontWeight:700}},`${locIcon(loc)} ${loc.name}`),
+                h("div",{style:{fontFamily:"'Space Mono'",fontSize:16,fontWeight:700,color:"#16a34a"}},fmtRs(lVal))
+              ),
+              h("div",{style:{fontSize:11,color:"#9e9080",marginBottom:16}},"Tap any item to edit its price"),
+              ...(loc.items||[]).sort((a,b)=>a.name.localeCompare(b.name)).map((item,i)=>{
+                const v=itemVal(item);
+                const isEditing=editPriceItem?.id===item.id;
+                return h("div",{key:item.id},
+                  h("div",{style:{padding:"10px 0",borderBottom:"1px solid #f0ebe0",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"},
+                    onClick:()=>setEditPriceItem(isEditing?null:{...item})},
+                    h("div",null,
+                      h("div",{style:{fontSize:12,fontWeight:600}},item.name),
+                      h("div",{style:{fontSize:10,color:"#9e9080",marginTop:2}},`${fmt(item.baseBal)} ${item.baseUnit}`)
+                    ),
+                    h("div",{style:{textAlign:"right"}},
+                      v>0?h("div",{style:{fontFamily:"'Space Mono'",fontSize:13,fontWeight:700,color:"#16a34a"}},fmtRs(v)):
+                        h("div",{style:{fontSize:10,color:"#c4b8aa"}},"₹0 · tap to add price"),
+                      item.costPerUnit>0&&h("div",{style:{fontSize:9,color:"#9e9080"}},`₹${item.costPerUnit}/${item.costUnit==="output"?item.outputUnit:item.baseUnit}`)
+                    )
+                  ),
+                  isEditing&&h("div",{style:{padding:"12px",background:"#f7f4ef",borderRadius:10,marginBottom:8}},
+                    h("div",{style:{display:"flex",gap:8,marginBottom:8,alignItems:"center"}},
+                      h("input",{className:"inp",type:"number",min:"0",placeholder:"Price ₹",value:editPriceItem.costPerUnit||"",onChange:e=>setEditPriceItem(f=>({...f,costPerUnit:e.target.value})),style:{fontSize:14},autoFocus:true}),
+                      h("span",{style:{fontSize:12,color:"#9e9080",whiteSpace:"nowrap"}},"per"),
+                      h("select",{value:editPriceItem.costUnit||"base",onChange:e=>setEditPriceItem(f=>({...f,costUnit:e.target.value})),style:{padding:"11px 8px",fontSize:12}},
+                        h("option",{value:"base"},item.baseUnit),
+                        item.conversion!==1&&h("option",{value:"output"},item.outputUnit)
+                      )
+                    ),
+                    h("div",{style:{display:"flex",gap:8}},
+                      h("button",{className:"btn btn-ghost",style:{flex:1,fontSize:11},onClick:()=>setEditPriceItem(null)},"Cancel"),
+                      h("button",{className:"btn btn-dark",style:{flex:2,fontSize:11},onClick:handleSavePrice},"Save Price")
+                    )
+                  )
+                );
+              })
+            );
+          })(),
+          h("button",{className:"btn btn-ghost",style:{width:"100%",marginTop:16},onClick:()=>{setValLocId(null);setEditPriceItem(null);}},"Close")
+        )
+      )
+    ),
+
+    // ── EDIT MASTER ITEM MODAL ──
+    modal==="editMaster"&&editMasterItem&&h("div",{className:"overlay",onClick:()=>{setModal(null);setEditMasterItem(null);}},
+      h("div",{style:{width:"100%",maxWidth:520,borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+        h("div",{className:"sheet",style:{background:"#fffdf9",padding:22,borderRadius:"20px 20px 0 0"}},
+          h(SheetHandle),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}},
+            h("div",{style:{fontSize:15,fontWeight:700}},"Edit Master Item"),
+            h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>{setModal(null);setEditMasterItem(null);}},"✕ Close")
+          ),
+          h("div",{style:{background:"#eef2ff",borderRadius:10,padding:"10px 14px",marginBottom:18,fontSize:11,color:"#4338ca",lineHeight:1.5}},
+            "⚡ Changes here will update ",h("strong",null,"all locations")," that carry this item."
+          ),
+          h(Field,{label:"Item Name"},
+            h("input",{className:"inp",value:editMasterItem.name,onChange:e=>setEditMasterItem(f=>({...f,name:e.target.value}))})
+          ),
+          h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
+            h(Field,{label:"Base Unit"},
+              h("select",{value:editMasterItem.baseUnit,onChange:e=>setEditMasterItem(f=>({...f,baseUnit:e.target.value}))},
+                ...["pcs","pkt","kg","kgs","gms","Box","pc","pcs","ltr","ml"].map(u=>h("option",{key:u,value:u},u))
+              )
+            ),
+            h(Field,{label:"Output Unit"},
+              h("select",{value:editMasterItem.outputUnit,onChange:e=>setEditMasterItem(f=>({...f,outputUnit:e.target.value}))},
+                ...["pcs","pkt","kg","kgs","gms","Box","pc","ltr","ml"].map(u=>h("option",{key:u,value:u},u))
+              )
+            )
+          ),
+          h(Field,{label:`1 ${editMasterItem.baseUnit} = ? ${editMasterItem.outputUnit}`},
+            h("input",{className:"inp",type:"number",min:"0.001",value:editMasterItem.conversion,onChange:e=>setEditMasterItem(f=>({...f,conversion:e.target.value}))})
+          ),
+          h(Field,{label:"Cost per unit (₹)"},
+            h("input",{className:"inp",type:"number",min:"0",placeholder:"0.00",value:editMasterItem.costPerUnit||"",onChange:e=>setEditMasterItem(f=>({...f,costPerUnit:e.target.value}))})
+          ),
+          h(Field,{label:"Price is per"},
+            h(LocBtns,{options:[["base",editMasterItem.baseUnit],["output",editMasterItem.outputUnit]],value:editMasterItem.costUnit||"base",onChange:v=>setEditMasterItem(f=>({...f,costUnit:v}))})
+          ),
+          h("div",{style:{background:"#f7f4ef",borderRadius:10,padding:"10px 14px",marginBottom:14,fontSize:11,color:"#9e9080"}},
+            `Carried by: ${locations.filter(l=>(l.items||[]).some(i=>i.masterItemId===editMasterItem.id)).map(l=>l.shortName).join(", ")||"—"}`
+          ),
+          h("div",{style:{display:"flex",gap:9}},
+            h("button",{className:"btn btn-ghost",style:{flex:1},onClick:()=>{setModal(null);setEditMasterItem(null);}},"Cancel"),
+            h("button",{className:"btn btn-dark",style:{flex:2},onClick:handleEditMasterItem},"✓ Save & Propagate")
+          )
+        )
+      )
+    ),
+
+    // ── ADD ITEM MODAL ──
+    modal==="addItem"&&h("div",{className:"overlay",onClick:()=>setModal(null)},
+      h("div",{style:{width:"100%",maxWidth:520,borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+        h("div",{className:"sheet",style:{background:"#fffdf9",padding:22,borderRadius:"20px 20px 0 0"}},
+          h(SheetHandle),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}},
+            h("div",{style:{fontSize:15,fontWeight:700}},"Add New Item"),
+            h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>setModal(null)},"✕ Close")
+          ),
+          h(Field,{label:"Add to Location *"},
+            h("select",{value:addItemForm.locId||activeLocId||"",onChange:e=>setAddItemForm(f=>({...f,locId:e.target.value}))},
+              h("option",{value:""},"Select location..."),
+              ...locations.map(l=>h("option",{key:l.id,value:l.id},`${locIcon(l)} ${l.name}`))
+            )
+          ),
+          h(Field,{label:"Item Name *"},h("input",{className:"inp",placeholder:"e.g. 300 ml Paper Cup",value:addItemForm.name,onChange:e=>setAddItemForm(f=>({...f,name:e.target.value})),autoFocus:true})),
+          h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
+            h(Field,{label:"Base Unit"},h("select",{value:addItemForm.baseUnit,onChange:e=>setAddItemForm(f=>({...f,baseUnit:e.target.value}))},
+              ...["pkt","pcs","kg","kgs","Box","rolls","pc","meters"].map(o=>h("option",{key:o,value:o},o)))),
+            h(Field,{label:"Output Unit"},h("select",{value:addItemForm.outputUnit,onChange:e=>setAddItemForm(f=>({...f,outputUnit:e.target.value}))},
+              ...["pcs","pkt","kg","kgs","Box","rolls","pc","meters"].map(o=>h("option",{key:o,value:o},o)))),
+            h(Field,{label:`1 ${addItemForm.baseUnit} = ? ${addItemForm.outputUnit}`},h("input",{className:"inp",type:"number",min:"0.001",value:addItemForm.conversion,onChange:e=>setAddItemForm(f=>({...f,conversion:e.target.value}))})),
+            h(Field,{label:"Min Stock Alert"},h("input",{className:"inp",type:"number",min:"0",value:addItemForm.minStock,onChange:e=>setAddItemForm(f=>({...f,minStock:e.target.value}))}))
+          ),
+          h(Field,{label:`Opening Stock (${addItemForm.baseUnit})`},h("input",{className:"inp",type:"number",min:"0",placeholder:"0",value:addItemForm.baseBal,onChange:e=>setAddItemForm(f=>({...f,baseBal:e.target.value}))})),
+          h("div",{style:{background:"#f7f4ef",borderRadius:11,padding:"12px 14px",marginBottom:13}},
+            h("div",{style:{fontSize:10,fontWeight:700,color:"#9e9080",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:10}},"Price (Optional)"),
+            h(Field,{label:"Cost per unit (₹)"},h("input",{className:"inp",type:"number",min:"0",placeholder:"0.00",value:addItemForm.costPerUnit,onChange:e=>setAddItemForm(f=>({...f,costPerUnit:e.target.value}))})),
+            h(Field,{label:"Price is per"},h(LocBtns,{options:[["base",addItemForm.baseUnit],["output",addItemForm.outputUnit]],value:addItemForm.costUnit,onChange:v=>setAddItemForm(f=>({...f,costUnit:v}))}))
+          ),
+          h("div",{style:{display:"flex",gap:9}},
+            h("button",{className:"btn btn-ghost",style:{flex:1},onClick:()=>setModal(null)},"Cancel"),
+            h("button",{className:"btn btn-dark",style:{flex:2},onClick:handleAddItem},"Add Item")
+          )
+        )
+      )
+    ),
+
+    // ── EDIT ITEM MODAL ──
+    modal==="editItem"&&editItem&&h("div",{className:"overlay",onClick:()=>{setModal(null);setEditItem(null);}},
+      h("div",{style:{width:"100%",maxWidth:520,borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+        h("div",{className:"sheet",style:{background:"#fffdf9",padding:22,borderRadius:"20px 20px 0 0"}},
+          h(SheetHandle),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}},
+            h("div",{style:{fontSize:15,fontWeight:700}},"Edit Item"),
+            h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>{setModal(null);setEditItem(null);}},"✕ Close")
+          ),
+          // Show item name as read-only with link to master catalog
+          h("div",{style:{background:"#f7f4ef",borderRadius:11,padding:"13px 15px",marginBottom:14}},
+            h("div",{style:{fontSize:13,fontWeight:700,marginBottom:4}},editItem.name),
+            h("div",{style:{fontSize:10,color:"#9e9080"}},`${editItem.baseUnit} · 1${editItem.baseUnit}=${editItem.conversion}${editItem.outputUnit}`),
+            editItem.costPerUnit>0&&h("div",{style:{fontSize:10,color:"#16a34a",marginTop:2}},`₹${editItem.costPerUnit} / ${editItem.costUnit==="output"?editItem.outputUnit:editItem.baseUnit}`)
+          ),
+          editItem.masterItemId&&h("div",{style:{background:"#eef2ff",borderRadius:10,padding:"10px 14px",marginBottom:18,fontSize:11,color:"#4338ca",lineHeight:1.5,cursor:"pointer"},
+            onClick:()=>{const mi=masterItems.find(m=>m.id===editItem.masterItemId);if(mi){setEditMasterItem({...mi});setModal("editMaster");}}},
+            "✏️ To rename, reprice or change units — edit in ",h("strong",null,"Master Catalog")," (Locations tab). Changes will apply to all locations."
+          ),
+          h(Field,{label:"Min Stock Alert (this location only)"},
+            h("input",{className:"inp",type:"number",min:"0",value:editItem.minStock,onChange:e=>setEditItem(f=>({...f,minStock:e.target.value})),placeholder:"0"})
+          ),
+          h("div",{style:{display:"flex",gap:9,marginBottom:9}},
+            h("button",{className:"btn btn-ghost",style:{flex:1},onClick:()=>{setModal(null);setEditItem(null);}},"Cancel"),
+            h("button",{className:"btn btn-dark",style:{flex:2},onClick:handleEditItem},"Save Min Stock")
+          ),
+          h("button",{className:"btn btn-danger",style:{width:"100%"},onClick:()=>setModal("deleteItem")},"🗑 Delete This Item")
+        )
+      )
+    ),
+
+    // ── DELETE ITEM CONFIRM ──
+    modal==="deleteItem"&&editItem&&h("div",{className:"overlay",onClick:()=>setModal("editItem")},
+      h("div",{style:{width:"100%",maxWidth:480,borderRadius:"20px 20px 0 0"},onClick:e=>e.stopPropagation()},
+        h("div",{className:"sheet",style:{background:"#fffdf9",padding:24,borderRadius:"20px 20px 0 0"}},
+          h(SheetHandle),
+          h("div",{style:{fontSize:16,fontWeight:700,marginBottom:6,color:"#b91c1c"}},"🗑 Delete Item?"),
+          h("div",{style:{fontSize:12,color:"#9e9080",marginBottom:14}},"Item removed from this location. Past transactions are kept."),
+          h("div",{style:{background:"#fef2f2",borderRadius:10,padding:"12px 14px",marginBottom:18,fontSize:13,fontWeight:700}},editItem.name),
+          h("div",{style:{display:"flex",gap:9}},
+            h("button",{className:"btn btn-ghost",style:{flex:1},onClick:()=>setModal("editItem")},"Cancel"),
+            h("button",{className:"btn",style:{flex:2,background:"#b91c1c",color:"#fff",border:"none"},onClick:handleDeleteItem},"Yes, Delete")
+          )
+        )
+      )
+    ),
+
+    // ── EDIT LOCATION MODAL ──
+    modal==="editLoc"&&editLoc&&h("div",{className:"overlay",onClick:()=>{setModal(null);setEditLoc(null);}},
+      h("div",{style:{width:"100%",maxWidth:520,borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+        h("div",{className:"sheet",style:{background:"#fffdf9",padding:22,borderRadius:"20px 20px 0 0"}},
+          h(SheetHandle),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}},
+            h("div",{style:{fontSize:15,fontWeight:700}},"Edit Location"),
+            h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>{setModal(null);setEditLoc(null);}},"✕ Close")
+          ),
+          h(Field,{label:"Full Name"},h("input",{className:"inp",value:editLoc.name,onChange:e=>setEditLoc(f=>({...f,name:e.target.value}))})),
+          h(Field,{label:"Short Name (tab label)"},h("input",{className:"inp",value:editLoc.shortName||"",onChange:e=>setEditLoc(f=>({...f,shortName:e.target.value}))})),
+          h(Field,{label:"Emoji"},h("div",{className:"emoji-grid"},...EMOJIS.map(em=>h("div",{key:em,className:`emoji-opt${editLoc.emoji===em?" selected":""}`,onClick:()=>setEditLoc(f=>({...f,emoji:em}))},em)))),
+          h(Field,{label:"Color"},h("div",{className:"color-grid"},...COLORS.map(c=>h("div",{key:c,className:`color-opt${editLoc.color===c?" selected":""}`,style:{background:c},onClick:()=>setEditLoc(f=>({...f,color:c}))})))),
+          h("div",{style:{display:"flex",gap:9}},
+            h("button",{className:"btn btn-ghost",style:{flex:1},onClick:()=>{setModal(null);setEditLoc(null);}},"Cancel"),
+            h("button",{className:"btn btn-dark",style:{flex:2},onClick:handleEditLoc},"Save Changes")
+          )
+        )
+      )
+    ),
+
+    // ── ADD LOCATION MODAL ──
+    modal==="addLoc"&&h("div",{className:"overlay",onClick:()=>setModal(null)},
+      h("div",{style:{width:"100%",maxWidth:520,borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+        h("div",{className:"sheet",style:{background:"#fffdf9",padding:22,borderRadius:"20px 20px 0 0"}},
+          h(SheetHandle),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}},
+            h("div",{style:{fontSize:15,fontWeight:700}},"Add New Location"),
+            h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>setModal(null)},"✕ Close")
+          ),
+          h(Field,{label:"Full Name *"},h("input",{className:"inp",placeholder:"e.g. New Godown",value:addLocForm.name,onChange:e=>setAddLocForm(f=>({...f,name:e.target.value})),autoFocus:true})),
+          h(Field,{label:"Short Name (tab label) *"},h("input",{className:"inp",placeholder:"e.g. NG",value:addLocForm.shortName,onChange:e=>setAddLocForm(f=>({...f,shortName:e.target.value}))})),
+          h(Field,{label:"Location Type"},
+            h("div",{style:{display:"flex",gap:6}},
+              ...["godown","outlet","outlet_ro"].map(t=>h("button",{key:t,className:"btn",style:{flex:1,padding:"9px 6px",fontSize:11,background:addLocForm.type===t?"#111":"#f0efe9",color:addLocForm.type===t?"#fff":"#666",border:"none"},onClick:()=>setAddLocForm(f=>({...f,type:t}))},
+                t==="godown"?"Godown":t==="outlet"?"Outlet":"Receive Only"
+              ))
+            )
+          ),
+          addLocForm.type!=="outlet_ro"&&h(Field,{label:"Can dispatch to"},
+            h("div",{style:{display:"flex",flexDirection:"column",gap:6}},
+              ...locations.filter(l=>l.type!=="godown").map(l=>h("label",{key:l.id,style:{display:"flex",alignItems:"center",gap:8,fontSize:13,cursor:"pointer"}},
+                h("input",{type:"checkbox",checked:addLocForm.destinations.includes(l.name),
+                  onChange:e=>setAddLocForm(f=>({...f,destinations:e.target.checked?[...f.destinations,l.name]:f.destinations.filter(d=>d!==l.name)}))
+                }),
+                `${locIcon(l)} ${l.name}`
+              ))
+            )
+          ),
+          h(Field,{label:"Emoji"},h("div",{className:"emoji-grid"},...EMOJIS.map(em=>h("div",{key:em,className:`emoji-opt${addLocForm.emoji===em?" selected":""}`,onClick:()=>setAddLocForm(f=>({...f,emoji:em}))},em)))),
+          h(Field,{label:"Color"},h("div",{className:"color-grid"},...COLORS.map(c=>h("div",{key:c,className:`color-opt${addLocForm.color===c?" selected":""}`,style:{background:c},onClick:()=>setAddLocForm(f=>({...f,color:c}))})))),
+          h(Field,{label:"Copy item list from (optional — starts at 0 stock)"},
+            h("select",{value:addLocForm.copyFrom,onChange:e=>setAddLocForm(f=>({...f,copyFrom:e.target.value}))},
+              h("option",{value:""},"Start empty"),
+              ...locations.map(l=>h("option",{key:l.id,value:l.id},l.name))
+            )
+          ),
+          h("div",{style:{display:"flex",gap:9}},
+            h("button",{className:"btn btn-ghost",style:{flex:1},onClick:()=>setModal(null)},"Cancel"),
+            h("button",{className:"btn btn-dark",style:{flex:2},onClick:handleAddLocation},"Add Location")
+          )
+        )
+      )
+    ),
+
+    // TOAST
+    toast&&h("div",{style:{
+      position:"fixed",
+      ...(isDesktop?{top:20,right:20,transform:"none"}:{bottom:85,left:"50%",transform:"translateX(-50%)"}),
+      background:toast.type==="error"?"#fef2f2":"#f0fdf4",
+      color:toast.type==="error"?"#b91c1c":"#15803d",
+      border:`1px solid ${toast.type==="error"?"#fecaca":"#bbf7d0"}`,
+      padding:"10px 18px",borderRadius:12,fontSize:12,fontWeight:600,
+      boxShadow:"0 4px 20px rgba(0,0,0,.12)",whiteSpace:"nowrap",zIndex:300,animation:"toastIn 0.3s ease"
+    }},toast.msg),
+
+    // DASH DETAIL MODAL — today's activity detail
+    dashDetailModal&&h("div",{className:"overlay",onClick:()=>setDashDetailModal(null)},
+      h("div",{style:{width:"100%",maxWidth:520,borderRadius:"20px 20px 0 0",maxHeight:"88vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+        h("div",{className:"sheet",style:{background:"#fffdf9",padding:22,borderRadius:"20px 20px 0 0"}},
+          h(SheetHandle),
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+            h("div",{style:{fontSize:15,fontWeight:700}},
+              dashDetailModal==="dispatch"?"📤 Today's Dispatches":
+              dashDetailModal==="receive"?"📥 Today's Receives":
+              dashDetailModal==="purchase"?"📦 Today's Purchases":
+              "⚖️ Today's Adjustments"
+            ),
+            h("button",{className:"btn btn-ghost",style:{fontSize:11,padding:"6px 12px"},onClick:()=>setDashDetailModal(null)},"✕ Close")
+          ),
+          (()=>{
+            const typeFilter=dashDetailModal==="adjusted"?["adjustment","consumption"]:[dashDetailModal];
+            const filtered=todayTx.filter(t=>typeFilter.includes(t.type));
+            if(filtered.length===0)return h("div",{style:{padding:28,textAlign:"center",color:"#b0a898",fontSize:12}},"No entries today");
+            return h("div",{className:"card",style:{overflow:"hidden"}},
+              ...filtered.map((tx,i)=>h("div",{key:tx.id||i,style:{padding:"11px 15px",borderBottom:i<filtered.length-1?"1px solid #f0ebe0":"none",display:"flex",gap:10,alignItems:"center"}},
+                h("div",{style:{flex:1,minWidth:0}},
+                  h("div",{style:{fontSize:12,fontWeight:600}},tx.itemName),
+                  h("div",{style:{fontSize:10,color:"#9e9080",marginTop:1}},
+                    tx.type==="dispatch"?`${tx.locName} → ${tx.dest}`:
+                    tx.type==="purchase"?`${tx.locName} · Purchased`:
+                    tx.type==="consumption"?`${tx.locName} · Consumed`:
+                    `${tx.locName} · Adjustment`
+                  )
+                ),
+                h("span",{className:"chip",style:{background:txColor(tx.type),color:txTextColor(tx.type)}},tx.qtyDisplay)
+              ))
+            );
+          })()
+        )
+      )
+    )
+  );
+}
+
+createRoot(document.getElementById("root")).render(h(App));
+// Prevent mouse scroll wheel from changing number input values
+document.addEventListener("wheel",e=>{if(document.activeElement&&document.activeElement.type==="number"){document.activeElement.blur();}},{passive:true});
+</script>
+</body>
+</html>
